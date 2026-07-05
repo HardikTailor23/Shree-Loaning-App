@@ -304,6 +304,27 @@
     font-weight:800;
     color: var(--accent-dark);
   }
+  .entry-list{ margin:12px 0; }
+  .entry-card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-bottom:10px;
+  }
+  .entry-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+  .entry-name{ font-weight:700; font-size:14px; }
+  .entry-amt{ font-weight:800; font-size:15px; white-space:nowrap; }
+  .entry-meta{ font-size:12px; color:var(--muted); margin-top:6px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .entry-date{ color:var(--muted); }
+  .entry-note{ color:var(--text); }
+  .entry-actions{ margin-top:10px; }
+  .entry-actions button{ margin:0 6px 0 0; padding:6px 14px; font-size:12px; }
   .suggestion-list{
     position:absolute;
     left:0; right:0;
@@ -381,12 +402,10 @@
 
     /* Tables fit the screen - fewer columns now, so no side scroll needed */
     table{ font-size:12.5px; width:100%; table-layout:fixed; }
-    th, td{ padding:11px 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    /* Modal detail tables can still scroll if they have many columns */
-    .modal-box table{ width:100%; table-layout:fixed; }
-    .modal-box th, .modal-box td{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:9px 6px; font-size:11.5px; }
+    th, td{ padding:11px 8px; word-break:break-word; }
     .row-actions button{ padding:6px 9px; font-size:11px !important; margin:0 0 0 4px; }
     .row-actions button:first-child{ margin-left:0; }
+    .entry-actions button{ margin:0 6px 0 0 !important; }
 
     .modal-overlay.active{ align-items:stretch; justify-content:stretch; }
     .modal-box{
@@ -417,8 +436,8 @@
     .bottom-nav .bn-item{
       flex:1;
       text-align:center;
-      padding:9px 2px 8px 2px;
-      font-size:10.5px;
+      padding:9px 1px 8px 1px;
+      font-size:9.5px;
       font-weight:600;
       color:var(--muted);
       cursor:pointer;
@@ -427,12 +446,12 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap:4px;
+      gap:3px;
       transition: color .12s;
     }
     .bottom-nav .bn-item .bn-ico{
-      width:23px;
-      height:23px;
+      width:21px;
+      height:21px;
       display:block;
     }
     .bottom-nav .bn-item.active{ color:var(--accent); }
@@ -501,6 +520,7 @@
   <div class="nav-item" data-section="addCollection">Add Collection</div>
   <div class="nav-item" data-section="collectionHistory">Incoming History</div>
   <div class="nav-item" data-section="profitTab">Profit</div>
+  <div class="nav-item" data-section="notesTab">Notes</div>
 </div>
 
 <div class="main">
@@ -639,6 +659,14 @@
     <div id="profitTableWrap"></div>
   </div>
 
+  <!-- NOTES -->
+  <div class="section" id="notesTab">
+    <h2>Notes</h2>
+    <div class="helper" style="margin-bottom:14px;">Yahan kuch bhi likh sakte ho — reminders, hisaab, kuch bhi. Cloud pe automatically save ho jayega.</div>
+    <textarea id="notesArea" placeholder="Yahan apne notes likho..." style="width:100%; max-width:600px; min-height:340px; padding:16px; border:1px solid var(--border); border-radius:12px; font-size:15px; line-height:1.6; font-family:inherit; background:#fff; resize:vertical;"></textarea>
+    <div id="notesSavedStatus" class="helper" style="margin-top:8px;">Saved ✓</div>
+  </div>
+
 </div>
 
 <!-- MOBILE BOTTOM NAV -->
@@ -666,6 +694,10 @@
   <button class="bn-item" data-section="profitTab">
     <svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 7-7"/><path d="M17 8h4v4"/></svg>
     Profit
+  </button>
+  <button class="bn-item" data-section="notesTab">
+    <svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v13l-4 4H4z"/><path d="M20 17h-4v4M8 9h8M8 13h5"/></svg>
+    Notes
   </button>
 </div>
 
@@ -734,6 +766,38 @@ const LOANS_KEY = 'loanManager_loans';
 const COLLECTIONS_KEY = 'loanManager_collections';
 const MANUAL_KEY = 'loanManager_manualEntries';
 const MANUAL_OUT_KEY = 'loanManager_manualOutgoing';
+const NOTES_KEY = 'loanManager_notes';
+
+function loadNotes(){ return localStorage.getItem(NOTES_KEY) || ''; }
+function saveNotesLocal(text){ localStorage.setItem(NOTES_KEY, text); }
+
+const _notesPush = { timer: null };
+function pushNotes(){
+  if(!window._shreeReady) return;
+  clearTimeout(_notesPush.timer);
+  _notesPush.timer = setTimeout(async ()=>{
+    try{
+      const text = loadNotes();
+      const { error } = await sb.from('shree_notes').upsert({ id:'main', content:text }, { onConflict:'id' });
+      if(error) throw error;
+      const st = document.getElementById('notesSavedStatus');
+      if(st) st.textContent = 'Saved ✓ (cloud)';
+    }catch(e){
+      console.error('Notes push error:', e);
+      const st = document.getElementById('notesSavedStatus');
+      if(st) st.textContent = 'Saved locally (cloud sync failed)';
+    }
+  }, 800);
+}
+async function pullNotes(){
+  try{
+    const { data, error } = await sb.from('shree_notes').select('content').eq('id','main').maybeSingle();
+    if(error) throw error;
+    if(data && typeof data.content === 'string'){
+      saveNotesLocal(data.content);
+    }
+  }catch(e){ console.error('Notes pull error:', e); }
+}
 
 function loadLoans(){ return JSON.parse(localStorage.getItem(LOANS_KEY) || '[]'); }
 function saveLoans(data){ localStorage.setItem(LOANS_KEY, JSON.stringify(data)); pushToCloud('loans'); }
@@ -818,6 +882,7 @@ async function pullFromCloud(){
       console.error('Pull error ('+kind+'):', e);
     }
   }
+  await pullNotes();
 }
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
@@ -837,6 +902,7 @@ function switchSection(sectionId){
   if(sectionId === 'addCollection') resetCollectionLoanSearch();
   if(sectionId === 'collectionHistory') renderCollectionsTable();
   if(sectionId === 'profitTab') renderProfitTable();
+  if(sectionId === 'notesTab') loadNotesIntoUI();
 }
 document.querySelectorAll('.nav-item').forEach(item=>{
   item.addEventListener('click', ()=> switchSection(item.dataset.section));
@@ -983,11 +1049,20 @@ function showLoanDetail(loanId){
     html += '<div class="empty">Is loan pe abhi tak koi payment/collection add nahi hui.</div>';
   } else {
     html += '<h2 style="font-size:15px;">Payment History</h2>';
-    html += '<table><thead><tr><th>Date</th><th>Principal</th><th>Interest</th><th>Note</th></tr></thead><tbody>';
-    entries.forEach(c=>{
-      html += '<tr><td>' + (c.date || '-') + '</td><td>' + fmt(c.principal||0) + ' KD</td><td>' + fmt(c.interest||0) + ' KD</td><td>' + escapeHtml(c.note || '-') + '</td></tr>';
+    html += '<div class="entry-list">';
+    entries.slice().reverse().forEach(c=>{
+      const parts = [];
+      if(parseFloat(c.principal||0) > 0) parts.push('<span class="badge fixed">Principal</span> ' + fmt(c.principal) + ' KD');
+      if(parseFloat(c.interest||0) > 0) parts.push('<span class="badge percent">Interest</span> ' + fmt(c.interest) + ' KD');
+      html += '<div class="entry-card">' +
+        '<div class="entry-top">' +
+          '<div class="entry-name" style="font-size:12px; color:var(--muted);">' + (c.date || '-') + '</div>' +
+        '</div>' +
+        '<div class="entry-meta" style="margin-top:4px;">' + parts.join(' &nbsp; ') + '</div>' +
+        (c.note ? '<div class="entry-note" style="margin-top:4px;">' + escapeHtml(c.note) + '</div>' : '') +
+      '</div>';
     });
-    html += '</tbody></table>';
+    html += '</div>';
   }
 
   document.getElementById('loanDetailContent').innerHTML = html;
@@ -1400,12 +1475,14 @@ function renderMonthDetailTable(key, g, loans, withHeading, balanceInfo){
   });
   allEntries.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
 
-  html += '<table><thead><tr><th>Source</th><th>Borrower / Description</th><th>Amount</th><th>Date</th><th>Note</th><th>Actions</th></tr></thead><tbody>';
+  html += '<div class="entry-list">';
   allEntries.forEach(e=>{
     const badge = e.type === 'principal' ? '<span class="badge fixed">Principal</span>'
       : e.type === 'interest' ? '<span class="badge percent">Interest</span>'
       : e.type === 'outgoing' ? '<span class="badge" style="background:#fdeaea; color:var(--red);">Outgoing</span>'
-      : '<span class="badge fixed">Manual</span>';
+      : '<span class="badge fixed">Manual In</span>';
+    const amtColor = e.type === 'outgoing' ? 'var(--red)' : 'var(--green)';
+    const amtSign = e.type === 'outgoing' ? '−' : '+';
     let editBtn;
     if(e.type === 'manual'){
       editBtn = '<button class="secondary" onclick="editManualEntry(\'' + e.id + '\')">Edit</button><button class="danger" onclick="deleteManualEntry(\'' + e.id + '\')">Delete</button>';
@@ -1414,10 +1491,18 @@ function renderMonthDetailTable(key, g, loans, withHeading, balanceInfo){
     } else {
       editBtn = '<button class="secondary" onclick="editCollection(\'' + e.id + '\')">Edit</button><button class="danger" onclick="deleteCollection(\'' + e.id + '\')">Delete</button>';
     }
-    html += '<tr><td>' + badge + '</td><td>' + escapeHtml(e.borrower) + '</td><td>' + fmt(e.amount) + ' KD</td><td>' + (e.date || '-') + '</td><td>' + escapeHtml(e.note || '-') + '</td>' +
-      '<td class="row-actions">' + editBtn + '</td></tr>';
+    html += '<div class="entry-card">' +
+      '<div class="entry-top">' +
+        '<div class="entry-name">' + escapeHtml(e.borrower) + '</div>' +
+        '<div class="entry-amt" style="color:' + amtColor + ';">' + amtSign + fmt(e.amount) + ' KD</div>' +
+      '</div>' +
+      '<div class="entry-meta">' + badge + ' <span class="entry-date">' + (e.date || '-') + '</span>' +
+        (e.note ? ' <span class="entry-note">• ' + escapeHtml(e.note) + '</span>' : '') +
+      '</div>' +
+      '<div class="entry-actions row-actions">' + editBtn + '</div>' +
+    '</div>';
   });
-  html += '</tbody></table>';
+  html += '</div>';
 
   // Highlighted balance banner at the very bottom of the page
   if(withHeading && balanceInfo){
@@ -1637,6 +1722,21 @@ document.getElementById('profitSearch').addEventListener('input', function(){
   renderProfitTable(this.value);
 });
 
+// ===================== NOTES =====================
+function loadNotesIntoUI(){
+  const area = document.getElementById('notesArea');
+  if(area) area.value = loadNotes();
+  const st = document.getElementById('notesSavedStatus');
+  if(st) st.textContent = 'Saved ✓';
+}
+
+document.getElementById('notesArea').addEventListener('input', function(){
+  saveNotesLocal(this.value);
+  const st = document.getElementById('notesSavedStatus');
+  if(st) st.textContent = 'Saving...';
+  pushNotes();
+});
+
 // Set today's date as default for date inputs
 document.getElementById('loanDate').valueAsDate = new Date();
 document.getElementById('collectionDate').valueAsDate = new Date();
@@ -1746,6 +1846,7 @@ async function startApp(){
 
   gate.style.display = 'none';
   renderDashboard();
+  loadNotesIntoUI();
   showToast('☁️ Cloud connected');
 }
 
