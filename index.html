@@ -377,10 +377,13 @@
     }
     .inline-form{ flex:1 1 100%; }
 
-    /* Tables become horizontally scrollable */
-    .table-scroll, table{ font-size:12px; }
-    table{ display:block; overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; }
-    th, td{ padding:9px 10px; }
+    /* Tables fit the screen - fewer columns now, so no side scroll needed */
+    table{ font-size:12.5px; width:100%; table-layout:fixed; }
+    th, td{ padding:11px 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    /* Modal detail tables can still scroll if they have many columns */
+    .modal-box table{ display:block; overflow-x:auto; white-space:nowrap; table-layout:auto; -webkit-overflow-scrolling:touch; }
+    .row-actions button{ padding:6px 9px; font-size:11px !important; margin:0 0 0 4px; }
+    .row-actions button:first-child{ margin-left:0; }
 
     .modal-box{
       padding:18px;
@@ -529,7 +532,7 @@
 
   <!-- GIVE LOAN -->
   <div class="section" id="giveLoan">
-    <h2>Give a New Loan</h2>
+    <h2 id="giveLoanHeading">Give a New Loan</h2>
     <form id="loanForm">
       <label>Borrower Name</label>
       <input type="text" id="borrowerName" required placeholder="e.g. Ramesh Kumar">
@@ -546,7 +549,9 @@
       <label>Notes (optional)</label>
       <textarea id="loanNotes" placeholder="e.g. 5% interest per month / 20 KD fixed interest"></textarea>
 
-      <button type="submit">Save Loan</button>
+      <div id="loanEditingBanner" class="helper" style="display:none; color:var(--accent-dark); font-weight:600;">Editing an existing loan...</div>
+      <button type="submit" id="loanSubmitBtn">Save Loan</button>
+      <button type="button" class="secondary" id="loanCancelEditBtn" style="display:none;" onclick="cancelEditLoan()">Cancel Edit</button>
     </form>
   </div>
 
@@ -837,24 +842,68 @@ document.querySelectorAll('.bn-item').forEach(item=>{
 });
 
 // --- Give Loan form ---
+let editingLoanId = null;
+
 document.getElementById('loanForm').addEventListener('submit', function(e){
   e.preventDefault();
-  const loan = {
-    id: uid(),
-    borrowerName: document.getElementById('borrowerName').value.trim(),
-    borrowerPhone: document.getElementById('borrowerPhone').value.trim(),
-    loanAmount: parseFloat(document.getElementById('loanAmount').value) || 0,
-    dateGiven: document.getElementById('loanDate').value,
-    notes: document.getElementById('loanNotes').value.trim(),
-    createdAt: new Date().toISOString()
-  };
-  const loans = loadLoans();
-  loans.push(loan);
-  saveLoans(loans);
-  this.reset();
-  alert('Loan saved for ' + loan.borrowerName);
+  const borrowerName = document.getElementById('borrowerName').value.trim();
+  const borrowerPhone = document.getElementById('borrowerPhone').value.trim();
+  const loanAmount = parseFloat(document.getElementById('loanAmount').value) || 0;
+  const dateGiven = document.getElementById('loanDate').value;
+  const notes = document.getElementById('loanNotes').value.trim();
+
+  let loans = loadLoans();
+  if(editingLoanId){
+    loans = loans.map(l=>{
+      if(l.id !== editingLoanId) return l;
+      return { ...l, borrowerName, borrowerPhone, loanAmount, dateGiven, notes };
+    });
+    saveLoans(loans);
+    alert('Loan updated for ' + borrowerName);
+    cancelEditLoan();
+    switchSection('allLoans');
+  } else {
+    const loan = { id: uid(), borrowerName, borrowerPhone, loanAmount, dateGiven, notes, createdAt: new Date().toISOString() };
+    loans.push(loan);
+    saveLoans(loans);
+    this.reset();
+    document.getElementById('loanDate').valueAsDate = new Date();
+    alert('Loan saved for ' + borrowerName);
+  }
   renderDashboard();
 });
+
+function editLoan(id){
+  const loan = loadLoans().find(l=>l.id === id);
+  if(!loan) return;
+  editingLoanId = id;
+  document.getElementById('borrowerName').value = loan.borrowerName || '';
+  document.getElementById('borrowerPhone').value = loan.borrowerPhone || '';
+  document.getElementById('loanAmount').value = loan.loanAmount || '';
+  document.getElementById('loanDate').value = loan.dateGiven || '';
+  document.getElementById('loanNotes').value = loan.notes || '';
+  document.getElementById('loanEditingBanner').style.display = 'block';
+  document.getElementById('giveLoanHeading').textContent = 'Edit Loan';
+  document.getElementById('loanSubmitBtn').textContent = 'Update Loan';
+  document.getElementById('loanCancelEditBtn').style.display = 'inline-block';
+
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.bn-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('[data-section="giveLoan"]').forEach(el=>el.classList.add('active'));
+  document.getElementById('giveLoan').classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function cancelEditLoan(){
+  editingLoanId = null;
+  document.getElementById('loanForm').reset();
+  document.getElementById('loanDate').valueAsDate = new Date();
+  document.getElementById('loanEditingBanner').style.display = 'none';
+  document.getElementById('giveLoanHeading').textContent = 'Give a New Loan';
+  document.getElementById('loanSubmitBtn').textContent = 'Save Loan';
+  document.getElementById('loanCancelEditBtn').style.display = 'none';
+}
 
 // --- Loans Table ---
 function principalCollectedForLoan(loanId){
@@ -878,20 +927,15 @@ function renderLoansTable(filterText){
     wrap.innerHTML = '<div class="empty">' + (filterText ? 'Is naam se koi loan nahi mila.' : 'Koi loan abhi add nahi hua. "Give Loan" tab se naya loan add karo.') + '</div>';
     return;
   }
-  let html = '<table><thead><tr><th>Borrower</th><th>Amount</th><th>Date</th><th>Principal Paid</th><th>Interest Paid</th><th>Outstanding</th><th>Notes</th><th>Actions</th></tr></thead><tbody>';
+  let html = '<table><thead><tr><th>Borrower</th><th>Amount</th><th style="text-align:right;">Action</th></tr></thead><tbody>';
   loans.slice().reverse().forEach(loan=>{
-    const principalPaid = principalCollectedForLoan(loan.id);
-    const interestPaid = interestCollectedForLoan(loan.id);
-    const outstanding = loan.loanAmount - principalPaid;
     html += '<tr>' +
-      '<td><span class="borrower-link" onclick="showLoanDetail(\'' + loan.id + '\')">' + escapeHtml(loan.borrowerName) + '</span>' + (loan.borrowerPhone ? '<br><span class="helper">'+escapeHtml(loan.borrowerPhone)+'</span>' : '') + '</td>' +
+      '<td><span class="borrower-link" onclick="showLoanDetail(\'' + loan.id + '\')">' + escapeHtml(loan.borrowerName) + '</span></td>' +
       '<td>' + fmt(loan.loanAmount) + ' KD</td>' +
-      '<td>' + (loan.dateGiven || '-') + '</td>' +
-      '<td>' + fmt(principalPaid) + ' KD</td>' +
-      '<td>' + fmt(interestPaid) + ' KD</td>' +
-      '<td>' + fmt(outstanding) + ' KD</td>' +
-      '<td>' + escapeHtml(loan.notes || '-') + '</td>' +
-      '<td class="row-actions"><button class="danger" onclick="deleteLoan(\'' + loan.id + '\')">Delete</button></td>' +
+      '<td class="row-actions" style="text-align:right; white-space:nowrap;">' +
+        '<button class="secondary" onclick="editLoan(\'' + loan.id + '\')">Edit</button>' +
+        '<button class="danger" onclick="deleteLoan(\'' + loan.id + '\')">Delete</button>' +
+      '</td>' +
       '</tr>';
   });
   html += '</tbody></table>';
@@ -1294,25 +1338,19 @@ function renderCollectionsTable(filterText){
 
   // Month list only — clicking a month opens the popup with its full detail
   let html = '<h2 style="font-size:16px;">Select a Month</h2>';
-  html += '<table><thead><tr><th>Month</th><th>Principal Collected</th><th>Interest Collected</th><th>Manual Incoming</th><th>Manual Outgoing</th><th>Total Incoming</th><th>Balance</th><th># Entries</th></tr></thead><tbody>';
+  html += '<table><thead><tr><th>Month</th><th>Incoming</th><th>Outgoing</th><th style="text-align:right;">Balance</th></tr></thead><tbody>';
   sortedKeys.forEach(key=>{
     const g = groups[key];
-    const principalTotal = g.loanEntries.reduce((s,c)=>s+parseFloat(c.principal||0),0);
     const interestTotal = g.loanEntries.reduce((s,c)=>s+parseFloat(c.interest||0),0);
     const manualTotal = g.manualEntries.reduce((s,m)=>s+parseFloat(m.amount||0),0);
     const outgoingTotal = g.outgoingEntries.reduce((s,o)=>s+parseFloat(o.amount||0),0);
     const totalIncoming = interestTotal + manualTotal;
-    const entryCount = g.loanEntries.length + g.manualEntries.length + g.outgoingEntries.length;
     const balanceValue = balances[key] ? balances[key].balance : 0;
     html += '<tr>' +
       '<td><span class="borrower-link" onclick="openMonthDetail(\'' + key + '\')">' + monthLabel(key) + '</span></td>' +
-      '<td>' + fmt(principalTotal) + ' KD</td>' +
-      '<td>' + fmt(interestTotal) + ' KD</td>' +
-      '<td>' + fmt(manualTotal) + ' KD</td>' +
-      '<td>' + fmt(outgoingTotal) + ' KD</td>' +
-      '<td><strong>' + fmt(totalIncoming) + ' KD</strong></td>' +
-      '<td><strong>' + fmt(balanceValue) + ' KD</strong></td>' +
-      '<td>' + entryCount + '</td>' +
+      '<td style="color:var(--green);">' + fmt(totalIncoming) + '</td>' +
+      '<td style="color:var(--red);">' + fmt(outgoingTotal) + '</td>' +
+      '<td style="text-align:right;"><strong>' + fmt(balanceValue) + ' KD</strong></td>' +
       '</tr>';
   });
   html += '</tbody></table>';
