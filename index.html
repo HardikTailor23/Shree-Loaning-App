@@ -16,6 +16,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root{
     --bg: #FAF9F5;
@@ -381,15 +383,19 @@
     table{ font-size:12.5px; width:100%; table-layout:fixed; }
     th, td{ padding:11px 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     /* Modal detail tables can still scroll if they have many columns */
-    .modal-box table{ display:block; overflow-x:auto; white-space:nowrap; table-layout:auto; -webkit-overflow-scrolling:touch; }
+    .modal-box table{ width:100%; table-layout:fixed; }
+    .modal-box th, .modal-box td{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:9px 6px; font-size:11.5px; }
     .row-actions button{ padding:6px 9px; font-size:11px !important; margin:0 0 0 4px; }
     .row-actions button:first-child{ margin-left:0; }
 
+    .modal-overlay.active{ align-items:stretch; justify-content:stretch; }
     .modal-box{
-      padding:18px;
-      width:94%;
-      max-height:88vh;
-      border-radius:16px;
+      padding:16px 14px calc(20px + env(safe-area-inset-bottom, 0px)) 14px;
+      width:100%;
+      max-width:100%;
+      max-height:100vh;
+      height:100vh;
+      border-radius:0;
     }
     .modal-box .cards{ grid-template-columns: repeat(2, 1fr); }
 
@@ -594,42 +600,32 @@
   <!-- INCOMING HISTORY -->
   <div class="section" id="collectionHistory">
     <h2>Incoming History</h2>
-    <div style="display:flex; gap:20px; flex-wrap:wrap;">
-      <div class="inline-form">
-        <strong style="font-size:14px;" id="manualFormTitle">Add Manual Incoming</strong>
-        <div class="helper">Koi bhi extra income jo kisi loan se link nahi hai, yahan se add karo. Ye us date ke month mein automatically count ho jayegi.</div>
-        <form id="manualEntryForm">
-          <label>Description</label>
-          <input type="text" id="manualDesc" required placeholder="e.g. Extra interest from Ramesh">
+    <div class="inline-form" style="max-width:520px;">
+      <strong style="font-size:14px;" id="manualFormTitle">Add Manual Entry</strong>
+      <div class="helper">Koi bhi extra income ya expense jo kisi loan se link nahi hai, yahan se add karo. Ye "All Loans" pe koi asar nahi karega.</div>
+      <form id="manualEntryForm">
+        <label>Type</label>
+        <div class="radio-group" id="manualTypeGroup">
+          <label class="radio-option selected" id="mtIncoming" onclick="setManualType('incoming')">
+            <input type="radio" name="manualType" value="incoming" checked> ⬇ Incoming
+          </label>
+          <label class="radio-option" id="mtOutgoing" onclick="setManualType('outgoing')">
+            <input type="radio" name="manualType" value="outgoing"> ⬆ Outgoing
+          </label>
+        </div>
 
-          <label>Amount (KD)</label>
-          <input type="number" id="manualAmount" step="0.001" required placeholder="e.g. 15">
+        <label>Description</label>
+        <input type="text" id="manualDesc" required placeholder="e.g. Extra interest / Office rent">
 
-          <label>Date</label>
-          <input type="date" id="manualDate" required>
+        <label>Amount (KD)</label>
+        <input type="number" id="manualAmount" step="0.001" required placeholder="e.g. 15">
 
-          <button type="submit" id="manualSubmitBtn">Add Entry</button>
-          <button type="button" class="secondary" id="manualCancelEditBtn" style="display:none;" onclick="cancelEditManual()">Cancel Edit</button>
-        </form>
-      </div>
+        <label>Date</label>
+        <input type="date" id="manualDate" required>
 
-      <div class="inline-form">
-        <strong style="font-size:14px;" id="outgoingFormTitle">Add Manual Outgoing</strong>
-        <div class="helper">Koi bhi extra expense/outgoing amount jo kisi loan se link nahi hai, yahan se add karo. Ye "All Loans" pe koi asar nahi karega.</div>
-        <form id="outgoingEntryForm">
-          <label>Description</label>
-          <input type="text" id="outgoingDesc" required placeholder="e.g. Office rent">
-
-          <label>Amount (KD)</label>
-          <input type="number" id="outgoingAmount" step="0.001" required placeholder="e.g. 15">
-
-          <label>Date</label>
-          <input type="date" id="outgoingDate" required>
-
-          <button type="submit" id="outgoingSubmitBtn">Add Entry</button>
-          <button type="button" class="secondary" id="outgoingCancelEditBtn" style="display:none;" onclick="cancelEditOutgoing()">Cancel Edit</button>
-        </form>
-      </div>
+        <button type="submit" id="manualSubmitBtn">Add Entry</button>
+        <button type="button" class="secondary" id="manualCancelEditBtn" style="display:none;" onclick="cancelEditManual()">Cancel Edit</button>
+      </form>
     </div>
     <input type="text" id="incomingHistorySearch" placeholder="Search borrower name / description..." style="max-width:400px; margin-bottom:16px;">
     <div id="collectionsTableWrap"></div>
@@ -677,7 +673,11 @@
 <!-- LOAN DETAIL MODAL -->
 <div class="modal-overlay" id="loanDetailModal">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeLoanDetail()">Close</button>
+    <div style="display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; margin-bottom:8px;">
+      <button class="secondary" onclick="exportElement('loanDetailContent', currentLoanExportName, 'png')">📷 Picture</button>
+      <button class="secondary" onclick="exportElement('loanDetailContent', currentLoanExportName, 'pdf')">📄 PDF</button>
+      <button class="modal-close" onclick="closeLoanDetail()">Close</button>
+    </div>
     <div id="loanDetailContent"></div>
   </div>
 </div>
@@ -685,7 +685,11 @@
 <!-- MONTH DETAIL MODAL -->
 <div class="modal-overlay" id="monthDetailModal">
   <div class="modal-box" style="max-width:760px;">
-    <button class="modal-close" onclick="closeMonthDetail()">Close</button>
+    <div style="display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; margin-bottom:8px;">
+      <button class="secondary" onclick="exportElement('monthDetailContent', currentMonthExportName, 'png')">📷 Picture</button>
+      <button class="secondary" onclick="exportElement('monthDetailContent', currentMonthExportName, 'pdf')">📄 PDF</button>
+      <button class="modal-close" onclick="closeMonthDetail()">Close</button>
+    </div>
     <div id="monthDetailContent"></div>
   </div>
 </div>
@@ -987,6 +991,7 @@ function showLoanDetail(loanId){
   }
 
   document.getElementById('loanDetailContent').innerHTML = html;
+  currentLoanExportName = 'Shree-' + loan.borrowerName.replace(/[^a-zA-Z0-9]/g,'_');
   document.getElementById('loanDetailModal').classList.add('active');
 }
 
@@ -1140,8 +1145,20 @@ function monthLabel(key){
   return d.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 }
 
-// --- Manual Entry Form ---
+// --- Manual Entry Form (merged incoming/outgoing) ---
 let editingManualId = null;
+let editingManualKind = 'incoming'; // 'incoming' or 'outgoing'
+let currentManualType = 'incoming';
+
+function setManualType(type){
+  currentManualType = type;
+  document.getElementById('mtIncoming').classList.toggle('selected', type === 'incoming');
+  document.getElementById('mtOutgoing').classList.toggle('selected', type === 'outgoing');
+  const inc = document.getElementById('mtIncoming').querySelector('input');
+  const out = document.getElementById('mtOutgoing').querySelector('input');
+  if(inc) inc.checked = (type === 'incoming');
+  if(out) out.checked = (type === 'outgoing');
+}
 
 document.getElementById('manualEntryForm').addEventListener('submit', function(e){
   e.preventDefault();
@@ -1150,22 +1167,30 @@ document.getElementById('manualEntryForm').addEventListener('submit', function(e
   const date = document.getElementById('manualDate').value;
   if(amount <= 0){ alert('Amount 0 se zyada honi chahiye.'); return; }
 
-  let entries = loadManualEntries();
   if(editingManualId){
-    entries = entries.map(en=>{
-      if(en.id !== editingManualId) return en;
-      return { ...en, description, amount, date };
-    });
-    saveManualEntries(entries);
-    alert('Manual entry updated.');
+    // Edit existing entry (kind fixed to what it was)
+    if(editingManualKind === 'incoming'){
+      let entries = loadManualEntries().map(en => en.id === editingManualId ? { ...en, description, amount, date } : en);
+      saveManualEntries(entries);
+    } else {
+      let entries = loadManualOutgoing().map(en => en.id === editingManualId ? { ...en, description, amount, date } : en);
+      saveManualOutgoing(entries);
+    }
+    alert('Entry updated.');
     cancelEditManual();
   } else {
+    // New entry based on selected type
     const entry = { id: uid(), description, amount, date, createdAt: new Date().toISOString() };
-    entries.push(entry);
-    saveManualEntries(entries);
+    if(currentManualType === 'incoming'){
+      const entries = loadManualEntries(); entries.push(entry); saveManualEntries(entries);
+      alert('Incoming entry added.');
+    } else {
+      const entries = loadManualOutgoing(); entries.push(entry); saveManualOutgoing(entries);
+      alert('Outgoing entry added.');
+    }
     this.reset();
+    setManualType(currentManualType);
     document.getElementById('manualDate').valueAsDate = new Date();
-    alert('Manual entry added.');
   }
   renderCollectionsTable(document.getElementById('incomingHistorySearch').value);
 });
@@ -1175,85 +1200,65 @@ function editManualEntry(id){
   if(!entry) return;
   document.getElementById('monthDetailModal').classList.remove('active');
   editingManualId = id;
+  editingManualKind = 'incoming';
   document.getElementById('manualDesc').value = entry.description || '';
   document.getElementById('manualAmount').value = entry.amount || '';
   document.getElementById('manualDate').value = entry.date || '';
-  document.getElementById('manualFormTitle').textContent = 'Edit Manual Entry';
+  setManualType('incoming');
+  document.getElementById('manualTypeGroup').style.display = 'none';
+  document.getElementById('manualFormTitle').textContent = 'Edit Incoming Entry';
   document.getElementById('manualSubmitBtn').textContent = 'Update Entry';
   document.getElementById('manualCancelEditBtn').style.display = 'inline-block';
+  goToIncomingForm();
+}
+
+function editOutgoingEntry(id){
+  const entry = loadManualOutgoing().find(e=>e.id === id);
+  if(!entry) return;
+  document.getElementById('monthDetailModal').classList.remove('active');
+  editingManualId = id;
+  editingManualKind = 'outgoing';
+  document.getElementById('manualDesc').value = entry.description || '';
+  document.getElementById('manualAmount').value = entry.amount || '';
+  document.getElementById('manualDate').value = entry.date || '';
+  setManualType('outgoing');
+  document.getElementById('manualTypeGroup').style.display = 'none';
+  document.getElementById('manualFormTitle').textContent = 'Edit Outgoing Entry';
+  document.getElementById('manualSubmitBtn').textContent = 'Update Entry';
+  document.getElementById('manualCancelEditBtn').style.display = 'inline-block';
+  goToIncomingForm();
+}
+
+function goToIncomingForm(){
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.bn-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('[data-section="collectionHistory"]').forEach(el=>el.classList.add('active'));
+  document.getElementById('collectionHistory').classList.add('active');
+  window.scrollTo(0,0);
 }
 
 function cancelEditManual(){
   editingManualId = null;
   document.getElementById('manualEntryForm').reset();
   document.getElementById('manualDate').valueAsDate = new Date();
+  document.getElementById('manualTypeGroup').style.display = 'flex';
+  setManualType('incoming');
   document.getElementById('manualFormTitle').textContent = 'Add Manual Entry';
   document.getElementById('manualSubmitBtn').textContent = 'Add Entry';
   document.getElementById('manualCancelEditBtn').style.display = 'none';
 }
 
 function deleteManualEntry(id){
-  if(!confirm('Ye manual entry delete karni hai?')) return;
+  if(!confirm('Ye entry delete karni hai?')) return;
   let entries = loadManualEntries().filter(e=>e.id !== id);
   saveManualEntries(entries);
   renderCollectionsTable(document.getElementById('incomingHistorySearch').value);
   refreshMonthModalIfOpen();
 }
 
-// --- Manual Outgoing Form ---
-let editingOutgoingId = null;
-
-document.getElementById('outgoingEntryForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const description = document.getElementById('outgoingDesc').value.trim();
-  const amount = parseFloat(document.getElementById('outgoingAmount').value) || 0;
-  const date = document.getElementById('outgoingDate').value;
-  if(amount <= 0){ alert('Amount 0 se zyada honi chahiye.'); return; }
-
-  let entries = loadManualOutgoing();
-  if(editingOutgoingId){
-    entries = entries.map(en=>{
-      if(en.id !== editingOutgoingId) return en;
-      return { ...en, description, amount, date };
-    });
-    saveManualOutgoing(entries);
-    alert('Manual outgoing updated.');
-    cancelEditOutgoing();
-  } else {
-    const entry = { id: uid(), description, amount, date, createdAt: new Date().toISOString() };
-    entries.push(entry);
-    saveManualOutgoing(entries);
-    this.reset();
-    document.getElementById('outgoingDate').valueAsDate = new Date();
-    alert('Manual outgoing added.');
-  }
-  renderCollectionsTable(document.getElementById('incomingHistorySearch').value);
-});
-
-function editOutgoingEntry(id){
-  const entry = loadManualOutgoing().find(e=>e.id === id);
-  if(!entry) return;
-  document.getElementById('monthDetailModal').classList.remove('active');
-  editingOutgoingId = id;
-  document.getElementById('outgoingDesc').value = entry.description || '';
-  document.getElementById('outgoingAmount').value = entry.amount || '';
-  document.getElementById('outgoingDate').value = entry.date || '';
-  document.getElementById('outgoingFormTitle').textContent = 'Edit Manual Outgoing';
-  document.getElementById('outgoingSubmitBtn').textContent = 'Update Entry';
-  document.getElementById('outgoingCancelEditBtn').style.display = 'inline-block';
-}
-
-function cancelEditOutgoing(){
-  editingOutgoingId = null;
-  document.getElementById('outgoingEntryForm').reset();
-  document.getElementById('outgoingDate').valueAsDate = new Date();
-  document.getElementById('outgoingFormTitle').textContent = 'Add Manual Outgoing';
-  document.getElementById('outgoingSubmitBtn').textContent = 'Add Entry';
-  document.getElementById('outgoingCancelEditBtn').style.display = 'none';
-}
-
 function deleteOutgoingEntry(id){
-  if(!confirm('Ye outgoing entry delete karni hai?')) return;
+  if(!confirm('Ye entry delete karni hai?')) return;
   let entries = loadManualOutgoing().filter(e=>e.id !== id);
   saveManualOutgoing(entries);
   renderCollectionsTable(document.getElementById('incomingHistorySearch').value);
@@ -1436,6 +1441,7 @@ function openMonthDetail(key){
   const balances = computeMonthlyBalances(groups);
   const html = renderMonthDetailTable(key, groups[key], loans, true, balances[key]);
   document.getElementById('monthDetailContent').innerHTML = html;
+  currentMonthExportName = 'Shree-' + monthLabel(key).replace(/[^a-zA-Z0-9]/g,'_');
   document.getElementById('monthDetailModal').classList.add('active');
 }
 
@@ -1635,7 +1641,58 @@ document.getElementById('profitSearch').addEventListener('input', function(){
 document.getElementById('loanDate').valueAsDate = new Date();
 document.getElementById('collectionDate').valueAsDate = new Date();
 document.getElementById('manualDate').valueAsDate = new Date();
-document.getElementById('outgoingDate').valueAsDate = new Date();
+
+// ===================== EXPORT (Picture / PDF) =====================
+let currentLoanExportName = 'Shree-Loan';
+let currentMonthExportName = 'Shree-Month';
+
+async function exportElement(elementId, fileName, type){
+  const el = document.getElementById(elementId);
+  if(!el){ return; }
+  if(typeof html2canvas === 'undefined'){ alert('Export library load nahi hui. Internet check karo aur dubara try karo.'); return; }
+  showToast('⏳ Export ho raha hai...');
+  try{
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      windowWidth: el.scrollWidth,
+      windowHeight: el.scrollHeight
+    });
+    if(type === 'png'){
+      const link = document.createElement('a');
+      link.download = fileName + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('✅ Picture saved');
+    } else {
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const margin = 8;
+      const imgW = pageW - margin*2;
+      const imgH = (canvas.height * imgW) / canvas.width;
+      let heightLeft = imgH;
+      let position = margin;
+      pdf.addImage(imgData, 'PNG', margin, position, imgW, imgH);
+      heightLeft -= (pageH - margin*2);
+      // Add extra pages if content is tall
+      while(heightLeft > 0){
+        position = margin - (imgH - heightLeft);
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', margin, position, imgW, imgH);
+        heightLeft -= (pageH - margin*2);
+      }
+      pdf.save(fileName + '.pdf');
+      showToast('✅ PDF saved');
+    }
+  }catch(e){
+    console.error('Export error:', e);
+    showToast('⚠️ Export failed');
+  }
+}
 
 // ===================== PWA SERVICE WORKER =====================
 // Prefers a real ./sw.js (best for GitHub Pages). Falls back to a blob SW
