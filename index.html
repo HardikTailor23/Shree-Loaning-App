@@ -1067,20 +1067,11 @@ function showLoanDetail(loanId){
     html += '<div class="empty">Is loan pe abhi tak koi payment/collection add nahi hui.</div>';
   } else {
     html += '<h2 style="font-size:15px;">Payment History</h2>';
-    html += '<div class="entry-list">';
-    entries.slice().reverse().forEach(c=>{
-      const parts = [];
-      if(parseFloat(c.principal||0) > 0) parts.push('<span class="badge fixed">Principal</span> ' + fmt(c.principal) + ' KD');
-      if(parseFloat(c.interest||0) > 0) parts.push('<span class="badge percent">Interest</span> ' + fmt(c.interest) + ' KD');
-      html += '<div class="entry-card">' +
-        '<div class="entry-top">' +
-          '<div class="entry-name" style="font-size:12px; color:var(--muted);">' + fmtDate(c.date) + '</div>' +
-        '</div>' +
-        '<div class="entry-meta" style="margin-top:4px;">' + parts.join(' &nbsp; ') + '</div>' +
-        (c.note ? '<div class="entry-note" style="margin-top:4px;">' + escapeHtml(c.note) + '</div>' : '') +
-      '</div>';
+    html += '<table><thead><tr><th>Date</th><th>Principal</th><th>Interest</th><th>Note</th></tr></thead><tbody>';
+    entries.forEach(c=>{
+      html += '<tr><td>' + fmtDate(c.date) + '</td><td>' + fmt(c.principal||0) + ' KD</td><td>' + fmt(c.interest||0) + ' KD</td><td>' + escapeHtml(c.note || '-') + '</td></tr>';
     });
-    html += '</div>';
+    html += '</tbody></table>';
   }
 
   document.getElementById('loanDetailContent').innerHTML = html;
