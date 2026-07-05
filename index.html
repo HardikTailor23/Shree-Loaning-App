@@ -440,7 +440,7 @@
       flex:1;
       text-align:center;
       padding:9px 1px 8px 1px;
-      font-size:9.5px;
+      font-size:10.5px;
       font-weight:600;
       color:var(--muted);
       cursor:pointer;
@@ -453,8 +453,8 @@
       transition: color .12s;
     }
     .bottom-nav .bn-item .bn-ico{
-      width:21px;
-      height:21px;
+      width:23px;
+      height:23px;
       display:block;
     }
     .bottom-nav .bn-item.active{ color:var(--accent); }
@@ -518,7 +518,6 @@
   <div class="app-tagline">Loan &amp; Ledger Manager</div>
 </div>
   <div class="nav-item active" data-section="dashboard">Dashboard</div>
-  <div class="nav-item" data-section="giveLoan">Give Loan</div>
   <div class="nav-item" data-section="allLoans">All Loans</div>
   <div class="nav-item" data-section="addCollection">Add Collection</div>
   <div class="nav-item" data-section="collectionHistory">Incoming History</div>
@@ -559,35 +558,16 @@
     <div id="dashSearchResults"></div>
   </div>
 
-  <!-- GIVE LOAN -->
-  <div class="section" id="giveLoan">
-    <h2 id="giveLoanHeading">Give a New Loan</h2>
-    <form id="loanForm">
-      <label>Borrower Name</label>
-      <input type="text" id="borrowerName" required placeholder="e.g. Ramesh Kumar">
-
-      <label>Phone (optional)</label>
-      <input type="text" id="borrowerPhone" placeholder="e.g. 5xxxxxxx">
-
-      <label>Loan Amount (KD)</label>
-      <input type="number" id="loanAmount" step="0.001" required placeholder="e.g. 500">
-
-      <label>Date Given</label>
-      <input type="date" id="loanDate" required>
-
-      <label>Notes (optional)</label>
-      <textarea id="loanNotes" placeholder="e.g. 5% interest per month / 20 KD fixed interest"></textarea>
-
-      <div id="loanEditingBanner" class="helper" style="display:none; color:var(--accent-dark); font-weight:600;">Editing an existing loan...</div>
-      <button type="submit" id="loanSubmitBtn">Save Loan</button>
-      <button type="button" class="secondary" id="loanCancelEditBtn" style="display:none;" onclick="cancelEditLoan()">Cancel Edit</button>
-    </form>
-  </div>
-
   <!-- ALL LOANS -->
   <div class="section" id="allLoans">
-    <h2>All Loans</h2>
-    <input type="text" id="allLoansSearch" placeholder="Search borrower name..." style="max-width:400px; margin-bottom:16px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+      <h2 style="margin:0;">All Loans</h2>
+      <button onclick="openGiveLoanModal()" style="display:inline-flex; align-items:center; gap:6px; margin:0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Add Loan
+      </button>
+    </div>
+    <input type="text" id="allLoansSearch" placeholder="Search borrower name..." style="max-width:400px; margin:16px 0;">
     <div id="loansTableWrap"></div>
   </div>
 
@@ -678,10 +658,6 @@
     <svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg>
     Home
   </button>
-  <button class="bn-item" data-section="giveLoan">
-    <svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
-    Loan
-  </button>
   <button class="bn-item" data-section="allLoans">
     <svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>
     Loans
@@ -704,6 +680,36 @@
   </button>
 </div>
 
+
+<!-- GIVE LOAN MODAL -->
+<div class="modal-overlay" id="giveLoanModal">
+  <div class="modal-box" style="max-width:520px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+      <h2 id="giveLoanHeading" style="margin:0;">Give a New Loan</h2>
+      <button class="modal-close" onclick="closeGiveLoanModal()">Close</button>
+    </div>
+    <form id="loanForm">
+      <label>Borrower Name</label>
+      <input type="text" id="borrowerName" required placeholder="e.g. Ramesh Kumar">
+
+      <label>Phone (optional)</label>
+      <input type="text" id="borrowerPhone" placeholder="e.g. 5xxxxxxx">
+
+      <label>Loan Amount (KD)</label>
+      <input type="number" id="loanAmount" step="0.001" required placeholder="e.g. 500">
+
+      <label>Date Given</label>
+      <input type="date" id="loanDate" required>
+
+      <label>Notes (optional)</label>
+      <textarea id="loanNotes" placeholder="e.g. 5% interest per month / 20 KD fixed interest"></textarea>
+
+      <div id="loanEditingBanner" class="helper" style="display:none; color:var(--accent-dark); font-weight:600;">Editing an existing loan...</div>
+      <button type="submit" id="loanSubmitBtn">Save Loan</button>
+      <button type="button" class="secondary" id="loanCancelEditBtn" style="display:none;" onclick="cancelEditLoan()">Cancel Edit</button>
+    </form>
+  </div>
+</div>
 
 <!-- LOAN DETAIL MODAL -->
 <div class="modal-overlay" id="loanDetailModal">
@@ -923,6 +929,16 @@ document.querySelectorAll('.bn-item').forEach(item=>{
 // --- Give Loan form ---
 let editingLoanId = null;
 
+function openGiveLoanModal(){
+  cancelEditLoan(); // reset to fresh state
+  document.getElementById('loanDate').valueAsDate = new Date();
+  document.getElementById('giveLoanModal').classList.add('active');
+}
+function closeGiveLoanModal(){
+  document.getElementById('giveLoanModal').classList.remove('active');
+  cancelEditLoan();
+}
+
 document.getElementById('loanForm').addEventListener('submit', function(e){
   e.preventDefault();
   const borrowerName = document.getElementById('borrowerName').value.trim();
@@ -939,16 +955,15 @@ document.getElementById('loanForm').addEventListener('submit', function(e){
     });
     saveLoans(loans);
     alert('Loan updated for ' + borrowerName);
-    cancelEditLoan();
-    switchSection('allLoans');
+    closeGiveLoanModal();
   } else {
     const loan = { id: uid(), borrowerName, borrowerPhone, loanAmount, dateGiven, notes, createdAt: new Date().toISOString() };
     loans.push(loan);
     saveLoans(loans);
-    this.reset();
-    document.getElementById('loanDate').valueAsDate = new Date();
     alert('Loan saved for ' + borrowerName);
+    closeGiveLoanModal();
   }
+  renderLoansTable(document.getElementById('allLoansSearch').value);
   renderDashboard();
 });
 
@@ -965,13 +980,7 @@ function editLoan(id){
   document.getElementById('giveLoanHeading').textContent = 'Edit Loan';
   document.getElementById('loanSubmitBtn').textContent = 'Update Loan';
   document.getElementById('loanCancelEditBtn').style.display = 'inline-block';
-
-  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
-  document.querySelectorAll('.bn-item').forEach(i=>i.classList.remove('active'));
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('[data-section="giveLoan"]').forEach(el=>el.classList.add('active'));
-  document.getElementById('giveLoan').classList.add('active');
-  window.scrollTo(0,0);
+  document.getElementById('giveLoanModal').classList.add('active');
 }
 
 function cancelEditLoan(){
@@ -1003,7 +1012,7 @@ function renderLoansTable(filterText){
   }
   const wrap = document.getElementById('loansTableWrap');
   if(loans.length === 0){
-    wrap.innerHTML = '<div class="empty">' + (filterText ? 'Is naam se koi loan nahi mila.' : 'Koi loan abhi add nahi hua. "Give Loan" tab se naya loan add karo.') + '</div>';
+    wrap.innerHTML = '<div class="empty">' + (filterText ? 'Is naam se koi loan nahi mila.' : 'Koi loan abhi add nahi hua. Upar "+ Add Loan" button se add karo.') + '</div>';
     return;
   }
   let html = '<table><thead><tr><th>Borrower</th><th>Amount</th><th style="text-align:right;">Action</th></tr></thead><tbody>';
@@ -1580,7 +1589,7 @@ function renderDashboard(){
 
   const recentWrap = document.getElementById('dashRecent');
   if(loans.length === 0){
-    recentWrap.innerHTML = '<div class="empty">Abhi koi loan nahi hai. "Give Loan" tab se shuru karo.</div>';
+    recentWrap.innerHTML = '<div class="empty">Abhi koi loan nahi hai. All Loans mein "+ Add Loan" se shuru karo.</div>';
   } else {
     let html = '<h2 style="font-size:16px;margin-top:10px;">Recent Loans</h2><table><thead><tr><th>Borrower</th><th>Amount</th><th>Date</th><th>Notes</th></tr></thead><tbody>';
     loans.slice(-5).reverse().forEach(loan=>{
