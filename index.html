@@ -6,6 +6,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#C96442">
+<meta name="apple-mobile-web-app-title" content="Shree">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTEyIiBmaWxsPSIjRkFGOUY1Ii8+CjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTgwIiBmaWxsPSIjRkZGM0U4IiBzdHJva2U9IiNDOTY0NDIiIHN0cm9rZS13aWR0aD0iMTQiLz4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2E4NTMyZiIgc3Ryb2tlLXdpZHRoPSI1IiBvcGFjaXR5PSIwLjQiLz4KPGcgZmlsbD0iI0M5NjQ0MiIgb3BhY2l0eT0iMC43Ij4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iOTQiIHI9IjkiLz4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iNDE4IiByPSI5Ii8+CjxjaXJjbGUgY3g9Ijk0IiBjeT0iMjU2IiByPSI5Ii8+CjxjaXJjbGUgY3g9IjQxOCIgY3k9IjI1NiIgcj0iOSIvPgo8L2c+Cjx0ZXh0IHg9IjI1NiIgeT0iMzMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iMjIwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjYTg1MzJmIj7gpLbgpY3gpLDgpYA8L3RleHQ+Cjwvc3ZnPgo=">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTEyIiBmaWxsPSIjRkFGOUY1Ii8+CjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTgwIiBmaWxsPSIjRkZGM0U4IiBzdHJva2U9IiNDOTY0NDIiIHN0cm9rZS13aWR0aD0iMTQiLz4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2E4NTMyZiIgc3Ryb2tlLXdpZHRoPSI1IiBvcGFjaXR5PSIwLjQiLz4KPGcgZmlsbD0iI0M5NjQ0MiIgb3BhY2l0eT0iMC43Ij4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iOTQiIHI9IjkiLz4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iNDE4IiByPSI5Ii8+CjxjaXJjbGUgY3g9Ijk0IiBjeT0iMjU2IiByPSI5Ii8+CjxjaXJjbGUgY3g9IjQxOCIgY3k9IjI1NiIgcj0iOSIvPgo8L2c+Cjx0ZXh0IHg9IjI1NiIgeT0iMzMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iMjIwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjYTg1MzJmIj7gpLbgpY3gpLDgpYA8L3RleHQ+Cjwvc3ZnPgo=">
 <title>Shree</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -321,7 +325,7 @@
   /* ======================= MOBILE RESPONSIVE ======================= */
   .mobile-topbar{ display:none; }
   @media (max-width: 820px){
-    body{ flex-direction:column; padding-bottom:72px; }
+    body{ flex-direction:column; padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
 
     /* Hide desktop sidebar, show mobile topbar + bottom nav */
     .sidebar{
@@ -389,21 +393,21 @@
 
     input, select, textarea, button{ font-size:16px !important; } /* prevents iOS zoom */
 
-    /* Bottom navigation bar */
+    /* Bottom navigation bar - visible on mobile */
     .bottom-nav{
-      display:flex;
+      display:flex !important;
       position:fixed;
       bottom:0; left:0; right:0;
       background: #fff;
       border-top:1px solid var(--border);
-      z-index:60;
-      padding-bottom: env(safe-area-inset-bottom, 0);
-      box-shadow:0 -2px 10px rgba(0,0,0,0.05);
+      z-index:600;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      box-shadow:0 -2px 10px rgba(0,0,0,0.08);
     }
     .bottom-nav .bn-item{
       flex:1;
       text-align:center;
-      padding:8px 2px 10px 2px;
+      padding:8px 2px calc(10px + env(safe-area-inset-bottom, 0px)) 2px;
       font-size:10px;
       color:var(--muted);
       cursor:pointer;
@@ -417,8 +421,9 @@
     .bottom-nav .bn-item .bn-ico{ font-size:18px; line-height:1; }
     .bottom-nav .bn-item.active{ color:var(--accent); font-weight:700; }
   }
-  .bottom-nav{ display:none; }
 
+  /* Base: hidden on desktop, overridden by mobile media query above */
+  .bottom-nav{ display:none; }
   @media (min-width: 821px){
     .bottom-nav, .mobile-topbar{ display:none !important; }
   }
@@ -1567,6 +1572,34 @@ document.getElementById('loanDate').valueAsDate = new Date();
 document.getElementById('collectionDate').valueAsDate = new Date();
 document.getElementById('manualDate').valueAsDate = new Date();
 document.getElementById('outgoingDate').valueAsDate = new Date();
+
+// ===================== PWA SERVICE WORKER =====================
+// Prefers a real ./sw.js (best for GitHub Pages). Falls back to a blob SW
+// so the app still installs even if sw.js wasn't uploaded.
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(() => {
+    const swCode = `
+      const CACHE = 'shree-v1';
+      self.addEventListener('install', e => { self.skipWaiting(); });
+      self.addEventListener('activate', e => { e.waitUntil(self.clients.claim()); });
+      self.addEventListener('fetch', e => {
+        if(e.request.mode === 'navigate'){
+          e.respondWith(
+            fetch(e.request).then(res => {
+              const copy = res.clone();
+              caches.open(CACHE).then(c => c.put(e.request, copy));
+              return res;
+            }).catch(() => caches.match(e.request).then(r => r || caches.match('./')))
+          );
+        }
+      });
+    `;
+    try{
+      const blob = new Blob([swCode], { type:'application/javascript' });
+      navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log('SW fallback failed:', err));
+    }catch(e){ console.log('SW blob error:', e); }
+  });
+}
 
 // ===================== LOGIN + STARTUP =====================
 window._shreeReady = false;
