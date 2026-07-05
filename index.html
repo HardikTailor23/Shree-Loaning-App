@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shree</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FAF9F5;
+    --sidebar: #F0EEE6;
+    --accent: #C96442;
+    --accent-dark: #a8532f;
+    --text: #2b2926;
+    --muted: #8a8579;
+    --border: #e5e1d8;
+    --card: #ffffff;
+    --green: #3f7d51;
+    --red: #c0392b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display:flex;
+    min-height:100vh;
+  }
+  .sidebar{
+    width:220px;
+    background: var(--sidebar);
+    border-right:1px solid var(--border);
+    padding:20px 0;
+    flex-shrink:0;
+  }
+  .sidebar h1{
+    font-size:18px;
+    padding:0 20px 16px 20px;
+    margin:0 0 10px 0;
+    border-bottom:1px solid var(--border);
+    font-family: Georgia, 'Source Serif 4', serif;
+    color: var(--accent);
+  }
+  .logo-block{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:14px 16px 18px 16px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:10px;
+  }
+  .logo-block .app-name{
+    margin-top:8px;
+    font-family: Georgia, 'Source Serif 4', serif;
+    font-size:20px;
+    font-weight:700;
+    letter-spacing:.02em;
+    color: var(--accent-dark);
+  }
+  .logo-block .app-tagline{
+    font-size:10px;
+    color: var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    margin-top:2px;
+  }
+  .nav-item{
+    padding:12px 20px;
+    cursor:pointer;
+    font-size:14px;
+    color: var(--text);
+    border-left:3px solid transparent;
+    transition: all .15s;
+  }
+  .nav-item:hover{ background: rgba(201,100,66,0.08); }
+  .nav-item.active{
+    border-left:3px solid var(--accent);
+    background: rgba(201,100,66,0.12);
+    color: var(--accent-dark);
+    font-weight:600;
+  }
+  .main{
+    flex:1;
+    padding:30px 40px;
+    max-width:1100px;
+  }
+  h2{
+    font-family: Georgia, 'Source Serif 4', serif;
+    margin-top:0;
+  }
+  .cards{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+    gap:16px;
+    margin-bottom:28px;
+  }
+  .card{
+    background: var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:18px;
+  }
+  .card .label{ font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em;}
+  .card .value{ font-size:24px; font-weight:700; margin-top:6px;}
+  .card .value.green{ color: var(--green); }
+  .card .value.red{ color: var(--red); }
+
+  form{
+    background: var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:24px;
+    max-width:520px;
+  }
+  label{
+    display:block;
+    font-size:13px;
+    color:var(--muted);
+    margin:14px 0 6px 0;
+    font-weight:600;
+  }
+  input[type=text], input[type=number], input[type=date], textarea, select{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-size:14px;
+    font-family:inherit;
+    background:#fff;
+    color:var(--text);
+  }
+  textarea{ resize:vertical; min-height:60px; }
+  .radio-group{
+    display:flex;
+    gap:10px;
+    margin-top:4px;
+  }
+  .radio-option{
+    flex:1;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:10px;
+    text-align:center;
+    cursor:pointer;
+    font-size:13px;
+    font-weight:600;
+    color:var(--muted);
+  }
+  .radio-option.selected{
+    border-color: var(--accent);
+    background: rgba(201,100,66,0.1);
+    color: var(--accent-dark);
+  }
+  .radio-option input{ display:none; }
+  button{
+    background: var(--accent);
+    color:#fff;
+    border:none;
+    padding:11px 22px;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    margin-top:18px;
+  }
+  button:hover{ background: var(--accent-dark); }
+  button.secondary{
+    background:transparent;
+    color: var(--muted);
+    border:1px solid var(--border);
+  }
+  button.danger{ background: var(--red); }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background: var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
+    font-size:13px;
+  }
+  th, td{
+    text-align:left;
+    padding:12px 14px;
+    border-bottom:1px solid var(--border);
+  }
+  th{
+    background: var(--sidebar);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    color:var(--muted);
+  }
+  tr:last-child td{ border-bottom:none; }
+  .badge{
+    display:inline-block;
+    padding:3px 9px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:600;
+  }
+  .badge.percent{ background:#e8f0e9; color:var(--green); }
+  .badge.fixed{ background:#fdeee9; color:var(--accent-dark); }
+  .row-actions button{
+    margin:0 4px 0 0;
+    padding:6px 12px;
+    font-size:12px;
+  }
+  .empty{
+    color:var(--muted);
+    font-size:14px;
+    padding:30px;
+    text-align:center;
+    background:var(--card);
+    border:1px dashed var(--border);
+    border-radius:10px;
+  }
+  .section{ display:none; }
+  .section.active{ display:block; }
+  .helper{ font-size:12px; color:var(--muted); margin-top:4px; }
+  .borrower-link{
+    color: var(--accent-dark);
+    cursor:pointer;
+    font-weight:600;
+    text-decoration:underline;
+  }
+  .borrower-link:hover{ color: var(--accent); }
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    top:0; left:0; right:0; bottom:0;
+    background:rgba(0,0,0,0.4);
+    z-index:100;
+    align-items:center;
+    justify-content:center;
+  }
+  .modal-overlay.active{ display:flex; }
+  .modal-box{
+    background:var(--card);
+    border-radius:12px;
+    padding:28px;
+    max-width:640px;
+    width:90%;
+    max-height:85vh;
+    overflow-y:auto;
+  }
+  .modal-box h2{ margin-top:0; }
+  .modal-close{
+    float:right;
+    background:transparent;
+    color:var(--muted);
+    border:1px solid var(--border);
+    padding:6px 14px;
+    margin-top:0;
+  }
+  .month-manual-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .inline-form{
+    background: var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:20px;
+    margin-bottom:24px;
+    max-width:460px;
+    flex:1 1 380px;
+    min-width:300px;
+  }
+  .inline-form label{ margin-top:10px; }
+  .balance-banner{
+    background: linear-gradient(135deg, rgba(201,100,66,0.14), rgba(63,125,81,0.12));
+    border:2px solid var(--accent);
+    border-radius:12px;
+    padding:20px 24px;
+    margin-top:24px;
+    text-align:center;
+  }
+  .balance-banner .label{
+    font-size:13px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin-bottom:6px;
+  }
+  .balance-banner .value{
+    font-size:30px;
+    font-weight:800;
+    color: var(--accent-dark);
+  }
+  .suggestion-list{
+    position:absolute;
+    left:0; right:0;
+    top:2px;
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:8px;
+    max-height:220px;
+    overflow-y:auto;
+    z-index:20;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  }
+  .suggestion-item{
+    padding:10px 12px;
+    cursor:pointer;
+    font-size:13px;
+    border-bottom:1px solid var(--border);
+  }
+  .suggestion-item:last-child{ border-bottom:none; }
+  .suggestion-item:hover{ background: rgba(201,100,66,0.08); }
+  .suggestion-item .sub{ font-size:11px; color:var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+<div class="logo-block">
+  <svg width="64" height="64" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="shreeBg" cx="50%" cy="45%" r="65%">
+        <stop offset="0%" stop-color="#FFF8F0"/>
+        <stop offset="100%" stop-color="#F0E4D6"/>
+      </radialGradient>
+    </defs>
+    <!-- outer sunburst / rangoli rays -->
+    <g stroke="#C96442" stroke-width="1.4" opacity="0.55">
+      <line x1="50" y1="2" x2="50" y2="10"/>
+      <line x1="50" y1="90" x2="50" y2="98"/>
+      <line x1="2" y1="50" x2="10" y2="50"/>
+      <line x1="90" y1="50" x2="98" y2="50"/>
+      <line x1="15.8" y1="15.8" x2="21.7" y2="21.7"/>
+      <line x1="78.3" y1="78.3" x2="84.2" y2="84.2"/>
+      <line x1="15.8" y1="84.2" x2="21.7" y2="78.3"/>
+      <line x1="78.3" y1="21.7" x2="84.2" y2="15.8"/>
+    </g>
+    <!-- main circle -->
+    <circle cx="50" cy="50" r="38" fill="url(#shreeBg)" stroke="#C96442" stroke-width="2.5"/>
+    <circle cx="50" cy="50" r="32" fill="none" stroke="#a8532f" stroke-width="1" opacity="0.4"/>
+    <!-- small lotus-petal dots around inner ring -->
+    <g fill="#C96442" opacity="0.7">
+      <circle cx="50" cy="15" r="1.8"/>
+      <circle cx="50" cy="85" r="1.8"/>
+      <circle cx="15" cy="50" r="1.8"/>
+      <circle cx="85" cy="50" r="1.8"/>
+    </g>
+    <!-- Shree glyph -->
+    <text x="50" y="66" text-anchor="middle" font-family="'Yatra One', 'Noto Serif Devanagari', serif" font-size="46" fill="#a8532f">श्री</text>
+  </svg>
+  <div class="app-name">Shree</div>
+  <div class="app-tagline">Loan &amp; Ledger Manager</div>
+</div>
+  <div class="nav-item active" data-section="dashboard">Dashboard</div>
+  <div class="nav-item" data-section="giveLoan">Give Loan</div>
+  <div class="nav-item" data-section="allLoans">All Loans</div>
+  <div class="nav-item" data-section="addCollection">Add Collection</div>
+  <div class="nav-item" data-section="collectionHistory">Incoming History</div>
+  <div class="nav-item" data-section="profitTab">Profit</div>
+</div>
+
+<div class="main">
+
+  <!-- DASHBOARD -->
+  <div class="section active" id="dashboard">
+    <h2>Dashboard</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="label">Total Loans Given</div>
+        <div class="value" id="dashTotalLoans">0.000 KD</div>
+      </div>
+      <div class="card">
+        <div class="label">Total Principal Collected</div>
+        <div class="value green" id="dashTotalPrincipalCollected">0.000 KD</div>
+      </div>
+      <div class="card">
+        <div class="label">Total Interest Collected</div>
+        <div class="value green" id="dashTotalInterestCollected">0.000 KD</div>
+      </div>
+      <div class="card">
+        <div class="label">Outstanding (Principal)</div>
+        <div class="value red" id="dashOutstanding">0.000 KD</div>
+      </div>
+      <div class="card">
+        <div class="label">Active Borrowers</div>
+        <div class="value" id="dashBorrowers">0</div>
+      </div>
+    </div>
+    <div id="dashRecent"></div>
+    <h2 style="font-size:16px; margin-top:24px;">Search Borrowers</h2>
+    <input type="text" id="dashboardSearch" placeholder="Type borrower name to search..." style="max-width:400px; margin-bottom:16px;">
+    <div id="dashSearchResults"></div>
+  </div>
+
+  <!-- GIVE LOAN -->
+  <div class="section" id="giveLoan">
+    <h2>Give a New Loan</h2>
+    <form id="loanForm">
+      <label>Borrower Name</label>
+      <input type="text" id="borrowerName" required placeholder="e.g. Ramesh Kumar">
+
+      <label>Phone (optional)</label>
+      <input type="text" id="borrowerPhone" placeholder="e.g. 5xxxxxxx">
+
+      <label>Loan Amount (KD)</label>
+      <input type="number" id="loanAmount" step="0.001" required placeholder="e.g. 500">
+
+      <label>Date Given</label>
+      <input type="date" id="loanDate" required>
+
+      <label>Notes (optional)</label>
+      <textarea id="loanNotes" placeholder="e.g. 5% interest per month / 20 KD fixed interest"></textarea>
+
+      <button type="submit">Save Loan</button>
+    </form>
+  </div>
+
+  <!-- ALL LOANS -->
+  <div class="section" id="allLoans">
+    <h2>All Loans</h2>
+    <input type="text" id="allLoansSearch" placeholder="Search borrower name..." style="max-width:400px; margin-bottom:16px;">
+    <div id="loansTableWrap"></div>
+  </div>
+
+  <!-- ADD COLLECTION -->
+  <div class="section" id="addCollection">
+    <h2>Add Collection (Manual Monthly Amount)</h2>
+    <form id="collectionForm">
+      <label>Search Loan / Borrower Name</label>
+      <input type="text" id="collectionLoanSearch" autocomplete="off" placeholder="Type borrower name..." required>
+      <div id="loanSuggestions" style="position:relative;"></div>
+      <input type="hidden" id="collectionLoanId" required>
+      <div class="helper" id="selectedLoanNote"></div>
+
+      <label>Principal Amount (KD) — agar loan amount ke against pay kar raha hai</label>
+      <input type="number" id="collectionPrincipal" step="0.001" placeholder="e.g. 100">
+
+      <label>Interest / Extra Amount (KD) — agar interest ya koi extra amount hai</label>
+      <input type="number" id="collectionInterest" step="0.001" placeholder="e.g. 25">
+      <div class="helper">Dono field bhar sakte ho ya sirf ek. Kam se kam ek amount zaroor daalo.</div>
+
+      <label>Date</label>
+      <input type="date" id="collectionDate" required>
+
+      <label>Note (optional)</label>
+      <textarea id="collectionNote" placeholder="e.g. June installment"></textarea>
+
+      <div id="collectionEditingBanner" class="helper" style="display:none; color:var(--accent-dark); font-weight:600;">Editing an existing entry...</div>
+      <button type="submit" id="collectionSubmitBtn">Save Collection</button>
+      <button type="button" class="secondary" id="collectionCancelEditBtn" style="display:none;" onclick="cancelEditCollection()">Cancel Edit</button>
+    </form>
+  </div>
+
+  <!-- INCOMING HISTORY -->
+  <div class="section" id="collectionHistory">
+    <h2>Incoming History</h2>
+    <div style="display:flex; gap:20px; flex-wrap:wrap;">
+      <div class="inline-form">
+        <strong style="font-size:14px;" id="manualFormTitle">Add Manual Incoming</strong>
+        <div class="helper">Koi bhi extra income jo kisi loan se link nahi hai, yahan se add karo. Ye us date ke month mein automatically count ho jayegi.</div>
+        <form id="manualEntryForm">
+          <label>Description</label>
+          <input type="text" id="manualDesc" required placeholder="e.g. Extra interest from Ramesh">
+
+          <label>Amount (KD)</label>
+          <input type="number" id="manualAmount" step="0.001" required placeholder="e.g. 15">
+
+          <label>Date</label>
+          <input type="date" id="manualDate" required>
+
+          <button type="submit" id="manualSubmitBtn">Add Entry</button>
+          <button type="button" class="secondary" id="manualCancelEditBtn" style="display:none;" onclick="cancelEditManual()">Cancel Edit</button>
+        </form>
+      </div>
+
+      <div class="inline-form">
+        <strong style="font-size:14px;" id="outgoingFormTitle">Add Manual Outgoing</strong>
+        <div class="helper">Koi bhi extra expense/outgoing amount jo kisi loan se link nahi hai, yahan se add karo. Ye "All Loans" pe koi asar nahi karega.</div>
+        <form id="outgoingEntryForm">
+          <label>Description</label>
+          <input type="text" id="outgoingDesc" required placeholder="e.g. Office rent">
+
+          <label>Amount (KD)</label>
+          <input type="number" id="outgoingAmount" step="0.001" required placeholder="e.g. 15">
+
+          <label>Date</label>
+          <input type="date" id="outgoingDate" required>
+
+          <button type="submit" id="outgoingSubmitBtn">Add Entry</button>
+          <button type="button" class="secondary" id="outgoingCancelEditBtn" style="display:none;" onclick="cancelEditOutgoing()">Cancel Edit</button>
+        </form>
+      </div>
+    </div>
+    <input type="text" id="incomingHistorySearch" placeholder="Search borrower name / description..." style="max-width:400px; margin-bottom:16px;">
+    <div id="collectionsTableWrap"></div>
+  </div>
+
+  <!-- PROFIT -->
+  <div class="section" id="profitTab">
+    <h2>Profit</h2>
+    <div class="helper" style="margin-bottom:14px;">Sirf interest collection profit mein count hota hai — principal ka koi asar nahi.</div>
+    <input type="text" id="profitSearch" placeholder="Search borrower name..." style="max-width:400px; margin-bottom:16px;">
+    <div id="profitTableWrap"></div>
+  </div>
+
+</div>
+
+
+<!-- LOAN DETAIL MODAL -->
+<div class="modal-overlay" id="loanDetailModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeLoanDetail()">Close</button>
+    <div id="loanDetailContent"></div>
+  </div>
+</div>
+
+<!-- MONTH DETAIL MODAL -->
+<div class="modal-overlay" id="monthDetailModal">
+  <div class="modal-box" style="max-width:760px;">
+    <button class="modal-close" onclick="closeMonthDetail()">Close</button>
+    <div id="monthDetailContent"></div>
+  </div>
+</div>
+
+<script>
+const LOANS_KEY = 'loanManager_loans';
+const COLLECTIONS_KEY = 'loanManager_collections';
+const MANUAL_KEY = 'loanManager_manualEntries';
+
+function loadLoans(){ return JSON.parse(localStorage.getItem(LOANS_KEY) || '[]'); }
+function saveLoans(data){ localStorage.setItem(LOANS_KEY, JSON.stringify(data)); }
+function loadCollections(){ return JSON.parse(localStorage.getItem(COLLECTIONS_KEY) || '[]'); }
+function saveCollections(data){ localStorage.setItem(COLLECTIONS_KEY, JSON.stringify(data)); }
+function loadManualEntries(){ return JSON.parse(localStorage.getItem(MANUAL_KEY) || '[]'); }
+function saveManualEntries(data){ localStorage.setItem(MANUAL_KEY, JSON.stringify(data)); }
+const MANUAL_OUT_KEY = 'loanManager_manualOutgoing';
+function loadManualOutgoing(){ return JSON.parse(localStorage.getItem(MANUAL_OUT_KEY) || '[]'); }
+function saveManualOutgoing(data){ localStorage.setItem(MANUAL_OUT_KEY, JSON.stringify(data)); }
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function fmt(n){ return Number(n || 0).toFixed(3); }
+
+// --- Navigation ---
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    item.classList.add('active');
+    document.getElementById(item.dataset.section).classList.add('active');
+    if(item.dataset.section === 'dashboard') renderDashboard();
+    if(item.dataset.section === 'allLoans') renderLoansTable();
+    if(item.dataset.section === 'addCollection') resetCollectionLoanSearch();
+    if(item.dataset.section === 'collectionHistory') renderCollectionsTable();
+    if(item.dataset.section === 'profitTab') renderProfitTable();
+  });
+});
+
+// --- Give Loan form ---
+document.getElementById('loanForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const loan = {
+    id: uid(),
+    borrowerName: document.getElementById('borrowerName').value.trim(),
+    borrowerPhone: document.getElementById('borrowerPhone').value.trim(),
+    loanAmount: parseFloat(document.getElementById('loanAmount').value) || 0,
+    dateGiven: document.getElementById('loanDate').value,
+    notes: document.getElementById('loanNotes').value.trim(),
+    createdAt: new Date().toISOString()
+  };
+  const loans = loadLoans();
+  loans.push(loan);
+  saveLoans(loans);
+  this.reset();
+  alert('Loan saved for ' + loan.borrowerName);
+  renderDashboard();
+});
+
+// --- Loans Table ---
+function principalCollectedForLoan(loanId){
+  return loadCollections().filter(c=>c.loanId===loanId).reduce((s,c)=>s+parseFloat(c.principal||0),0);
+}
+function interestCollectedForLoan(loanId){
+  return loadCollections().filter(c=>c.loanId===loanId).reduce((s,c)=>s+parseFloat(c.interest||0),0);
+}
+function totalCollectedForLoan(loanId){
+  return loadCollections().filter(c=>c.loanId===loanId).reduce((s,c)=>s+parseFloat(c.amount||0),0);
+}
+
+function renderLoansTable(filterText){
+  filterText = (filterText || '').toLowerCase();
+  let loans = loadLoans();
+  if(filterText){
+    loans = loans.filter(l => l.borrowerName.toLowerCase().includes(filterText));
+  }
+  const wrap = document.getElementById('loansTableWrap');
+  if(loans.length === 0){
+    wrap.innerHTML = '<div class="empty">' + (filterText ? 'Is naam se koi loan nahi mila.' : 'Koi loan abhi add nahi hua. "Give Loan" tab se naya loan add karo.') + '</div>';
+    return;
+  }
+  let html = '<table><thead><tr><th>Borrower</th><th>Amount</th><th>Date</th><th>Principal Paid</th><th>Interest Paid</th><th>Outstanding</th><th>Notes</th><th>Actions</th></tr></thead><tbody>';
+  loans.slice().reverse().forEach(loan=>{
+    const principalPaid = principalCollectedForLoan(loan.id);
+    const interestPaid = interestCollectedForLoan(loan.id);
+    const outstanding = loan.loanAmount - principalPaid;
+    html += '<tr>' +
+      '<td><span class="borrower-link" onclick="showLoanDetail(\'' + loan.id + '\')">' + escapeHtml(loan.borrowerName) + '</span>' + (loan.borrowerPhone ? '<br><span class="helper">'+escapeHtml(loan.borrowerPhone)+'</span>' : '') + '</td>' +
+      '<td>' + fmt(loan.loanAmount) + ' KD</td>' +
+      '<td>' + (loan.dateGiven || '-') + '</td>' +
+      '<td>' + fmt(principalPaid) + ' KD</td>' +
+      '<td>' + fmt(interestPaid) + ' KD</td>' +
+      '<td>' + fmt(outstanding) + ' KD</td>' +
+      '<td>' + escapeHtml(loan.notes || '-') + '</td>' +
+      '<td class="row-actions"><button class="danger" onclick="deleteLoan(\'' + loan.id + '\')">Delete</button></td>' +
+      '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function deleteLoan(id){
+  if(!confirm('Ye loan aur uski saari collections delete karni hain?')) return;
+  let loans = loadLoans().filter(l=>l.id !== id);
+  saveLoans(loans);
+  let collections = loadCollections().filter(c=>c.loanId !== id);
+  saveCollections(collections);
+  renderLoansTable(document.getElementById('allLoansSearch').value);
+  renderDashboard();
+}
+
+document.getElementById('allLoansSearch').addEventListener('input', function(){
+  renderLoansTable(this.value);
+});
+
+function showLoanDetail(loanId){
+  const loan = loadLoans().find(l=>l.id === loanId);
+  if(!loan) return;
+  const entries = loadCollections().filter(c=>c.loanId === loanId).slice().sort((a,b)=> (a.date||'').localeCompare(b.date||''));
+  const principalPaid = principalCollectedForLoan(loanId);
+  const interestPaid = interestCollectedForLoan(loanId);
+  const outstanding = loan.loanAmount - principalPaid;
+
+  let html = '<h2>' + escapeHtml(loan.borrowerName) + '</h2>';
+  html += '<div class="cards">' +
+    '<div class="card"><div class="label">Loan Amount</div><div class="value">' + fmt(loan.loanAmount) + ' KD</div></div>' +
+    '<div class="card"><div class="label">Principal Paid</div><div class="value green">' + fmt(principalPaid) + ' KD</div></div>' +
+    '<div class="card"><div class="label">Interest Paid</div><div class="value green">' + fmt(interestPaid) + ' KD</div></div>' +
+    '<div class="card"><div class="label">Outstanding</div><div class="value red">' + fmt(outstanding) + ' KD</div></div>' +
+  '</div>';
+  html += '<p style="font-size:13px;"><strong>Date Given:</strong> ' + (loan.dateGiven || '-') +
+    (loan.borrowerPhone ? ' &nbsp;|&nbsp; <strong>Phone:</strong> ' + escapeHtml(loan.borrowerPhone) : '') +
+    (loan.notes ? '<br><strong>Notes:</strong> ' + escapeHtml(loan.notes) : '') + '</p>';
+
+  if(entries.length === 0){
+    html += '<div class="empty">Is loan pe abhi tak koi payment/collection add nahi hui.</div>';
+  } else {
+    html += '<h2 style="font-size:15px;">Payment History</h2>';
+    html += '<table><thead><tr><th>Date</th><th>Principal</th><th>Interest</th><th>Note</th></tr></thead><tbody>';
+    entries.forEach(c=>{
+      html += '<tr><td>' + (c.date || '-') + '</td><td>' + fmt(c.principal||0) + ' KD</td><td>' + fmt(c.interest||0) + ' KD</td><td>' + escapeHtml(c.note || '-') + '</td></tr>';
+    });
+    html += '</tbody></table>';
+  }
+
+  document.getElementById('loanDetailContent').innerHTML = html;
+  document.getElementById('loanDetailModal').classList.add('active');
+}
+
+function closeLoanDetail(){
+  document.getElementById('loanDetailModal').classList.remove('active');
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// --- Add Collection: Smart Search Autocomplete ---
+function resetCollectionLoanSearch(){
+  document.getElementById('collectionLoanSearch').value = '';
+  document.getElementById('collectionLoanId').value = '';
+  document.getElementById('selectedLoanNote').innerHTML = '';
+  document.getElementById('loanSuggestions').innerHTML = '';
+}
+
+function renderLoanSuggestions(query){
+  const box = document.getElementById('loanSuggestions');
+  const loans = loadLoans();
+  if(!query){ box.innerHTML = ''; return; }
+  const matches = loans.filter(l => l.borrowerName.toLowerCase().includes(query.toLowerCase()));
+  if(matches.length === 0){
+    box.innerHTML = '<div class="suggestion-list"><div class="suggestion-item">Koi match nahi mila</div></div>';
+    return;
+  }
+  let html = '<div class="suggestion-list">';
+  matches.forEach(loan=>{
+    html += '<div class="suggestion-item" onclick="selectLoanForCollection(\'' + loan.id + '\')">' +
+      escapeHtml(loan.borrowerName) +
+      '<div class="sub">' + fmt(loan.loanAmount) + ' KD &middot; ' + (loan.dateGiven || '-') + '</div>' +
+      '</div>';
+  });
+  html += '</div>';
+  box.innerHTML = html;
+}
+
+function selectLoanForCollection(loanId){
+  const loan = loadLoans().find(l=>l.id === loanId);
+  if(!loan) return;
+  document.getElementById('collectionLoanSearch').value = loan.borrowerName;
+  document.getElementById('collectionLoanId').value = loan.id;
+  document.getElementById('loanSuggestions').innerHTML = '';
+  const noteBox = document.getElementById('selectedLoanNote');
+  noteBox.innerHTML = loan.notes
+    ? '<strong>Note (loan ke time likha gaya):</strong> ' + escapeHtml(loan.notes)
+    : '<em>Is loan ke liye koi note nahi hai.</em>';
+}
+
+document.getElementById('collectionLoanSearch').addEventListener('input', function(){
+  document.getElementById('collectionLoanId').value = '';
+  document.getElementById('selectedLoanNote').innerHTML = '';
+  renderLoanSuggestions(this.value.trim());
+});
+
+let editingCollectionId = null;
+
+document.getElementById('collectionForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const loanId = document.getElementById('collectionLoanId').value;
+  if(!loanId){ alert('Pehle ek loan add karo phir collection add karo.'); return; }
+  const principal = parseFloat(document.getElementById('collectionPrincipal').value) || 0;
+  const interest = parseFloat(document.getElementById('collectionInterest').value) || 0;
+  if(principal <= 0 && interest <= 0){
+    alert('Principal ya Interest, kam se kam ek amount daalo.');
+    return;
+  }
+  const date = document.getElementById('collectionDate').value;
+  const note = document.getElementById('collectionNote').value.trim();
+
+  let collections = loadCollections();
+  if(editingCollectionId){
+    collections = collections.map(c=>{
+      if(c.id !== editingCollectionId) return c;
+      return { ...c, loanId, principal, interest, amount: principal + interest, date, note };
+    });
+    saveCollections(collections);
+    alert('Collection updated.');
+    cancelEditCollection();
+  } else {
+    const entry = {
+      id: uid(),
+      loanId: loanId,
+      principal: principal,
+      interest: interest,
+      amount: principal + interest, // total, kept for backward compatibility
+      date: date,
+      note: note,
+      createdAt: new Date().toISOString()
+    };
+    collections.push(entry);
+    saveCollections(collections);
+    this.reset();
+    resetCollectionLoanSearch();
+    document.getElementById('collectionDate').valueAsDate = new Date();
+    alert('Collection saved.');
+  }
+  renderDashboard();
+});
+
+function editCollection(id){
+  const entry = loadCollections().find(c=>c.id === id);
+  if(!entry) return;
+  document.getElementById('monthDetailModal').classList.remove('active');
+  const loan = loadLoans().find(l=>l.id === entry.loanId);
+  editingCollectionId = id;
+  document.getElementById('collectionLoanSearch').value = loan ? loan.borrowerName : '';
+  document.getElementById('collectionLoanId').value = entry.loanId;
+  document.getElementById('selectedLoanNote').innerHTML = (loan && loan.notes)
+    ? '<strong>Note (loan ke time likha gaya):</strong> ' + escapeHtml(loan.notes)
+    : '';
+  document.getElementById('collectionPrincipal').value = entry.principal || '';
+  document.getElementById('collectionInterest').value = entry.interest || '';
+  document.getElementById('collectionDate').value = entry.date || '';
+  document.getElementById('collectionNote').value = entry.note || '';
+  document.getElementById('collectionEditingBanner').style.display = 'block';
+  document.getElementById('collectionSubmitBtn').textContent = 'Update Collection';
+  document.getElementById('collectionCancelEditBtn').style.display = 'inline-block';
+
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelector('.nav-item[data-section="addCollection"]').classList.add('active');
+  document.getElementById('addCollection').classList.add('active');
+}
+
+function cancelEditCollection(){
+  editingCollectionId = null;
+  document.getElementById('collectionForm').reset();
+  resetCollectionLoanSearch();
+  document.getElementById('collectionDate').valueAsDate = new Date();
+  document.getElementById('collectionEditingBanner').style.display = 'none';
+  document.getElementById('collectionSubmitBtn').textContent = 'Save Collection';
+  document.getElementById('collectionCancelEditBtn').style.display = 'none';
+}
+
+// --- Collection History Table (with month-wise summary) ---
+function monthKey(dateStr){
+  if(!dateStr) return 'unknown';
+  return dateStr.slice(0,7); // YYYY-MM
+}
+function monthLabel(key){
+  if(key === 'unknown') return 'No Date';
+  const [y,m] = key.split('-');
+  const d = new Date(parseInt(y), parseInt(m)-1, 1);
+  return d.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+}
+
+// --- Manual Entry Form ---
+let editingManualId = null;
+
+document.getElementById('manualEntryForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const description = document.getElementById('manualDesc').value.trim();
+  const amount = parseFloat(document.getElementById('manualAmount').value) || 0;
+  const date = document.getElementById('manualDate').value;
+  if(amount <= 0){ alert('Amount 0 se zyada honi chahiye.'); return; }
+
+  let entries = loadManualEntries();
+  if(editingManualId){
+    entries = entries.map(en=>{
+      if(en.id !== editingManualId) return en;
+      return { ...en, description, amount, date };
+    });
+    saveManualEntries(entries);
+    alert('Manual entry updated.');
+    cancelEditManual();
+  } else {
+    const entry = { id: uid(), description, amount, date, createdAt: new Date().toISOString() };
+    entries.push(entry);
+    saveManualEntries(entries);
+    this.reset();
+    document.getElementById('manualDate').valueAsDate = new Date();
+    alert('Manual entry added.');
+  }
+  renderCollectionsTable(document.getElementById('incomingHistorySearch').value);
+});
+
+function editManualEntry(id){
+  const entry = loadManualEntries().find(e=>e.id === id);
+  if(!entry) return;
+  document.getElementById('monthDetailModal').classList.remove('active');
+  editingManualId = id;
+  document.getElementById('manualDesc').value = entry.description || '';
+  document.getElementById('manualAmount').value = entry.amount || '';
+  document.getElementById('manualDate').value = entry.date || '';
+  document.getElementById('manualFormTitle').textContent = 'Edit Manual Entry';
+  document.getElementById('manualSubmitBtn').textContent = 'Update Entry';
+  document.getElementById('manualCancelEditBtn').style.display = 'inline-block';
+}
+
+function cancelEditManual(){
+  editingManualId = null;
+  document.getElementById('manualEntryForm').reset();
+  document.getElementById('manualDate').valueAsDate = new Date();
+  document.getElementById('manualFormTitle').textContent = 'Add Manual Entry';
+  document.getElementById('manualSubmitBtn').textContent = 'Add Entry';
+  document.getElementById('manualCancelEditBtn').style.display = 'none';
+}
+
+function deleteManualEntry(id){
+  if(!confirm('Ye manual entry delete karni hai?')) return;
+  let entries = loadManualEntries().filter(e=>e.id !== id);
+  saveManualEntries(entries);
+  renderCollectionsTable(document.getElementById('incomingHistorySearch').value);
+  refreshMonthModalIfOpen();
+}
+
+// --- Manual Outgoing Form ---
+let editingOutgoingId = null;
+
+document.getElementById('outgoingEntryForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const description = document.getElementById('outgoingDesc').value.trim();
+  const amount = parseFloat(document.getElementById('outgoingAmount').value) || 0;
+  const date = document.getElementById('outgoingDate').value;
+  if(amount <= 0){ alert('Amount 0 se zyada honi chahiye.'); return; }
+
+  let entries = loadManualOutgoing();
+  if(editingOutgoingId){
+    entries = entries.map(en=>{
+      if(en.id !== editingOutgoingId) return en;
+      return { ...en, description, amount, date };
+    });
+    saveManualOutgoing(entries);
+    alert('Manual outgoing updated.');
+    cancelEditOutgoing();
+  } else {
+    const entry = { id: uid(), description, amount, date, createdAt: new Date().toISOString() };
+    entries.push(entry);
+    saveManualOutgoing(entries);
+    this.reset();
+    document.getElementById('outgoingDate').valueAsDate = new Date();
+    alert('Manual outgoing added.');
+  }
+  renderCollectionsTable(document.getElementById('incomingHistorySearch').value);
+});
+
+function editOutgoingEntry(id){
+  const entry = loadManualOutgoing().find(e=>e.id === id);
+  if(!entry) return;
+  document.getElementById('monthDetailModal').classList.remove('active');
+  editingOutgoingId = id;
+  document.getElementById('outgoingDesc').value = entry.description || '';
+  document.getElementById('outgoingAmount').value = entry.amount || '';
+  document.getElementById('outgoingDate').value = entry.date || '';
+  document.getElementById('outgoingFormTitle').textContent = 'Edit Manual Outgoing';
+  document.getElementById('outgoingSubmitBtn').textContent = 'Update Entry';
+  document.getElementById('outgoingCancelEditBtn').style.display = 'inline-block';
+}
+
+function cancelEditOutgoing(){
+  editingOutgoingId = null;
+  document.getElementById('outgoingEntryForm').reset();
+  document.getElementById('outgoingDate').valueAsDate = new Date();
+  document.getElementById('outgoingFormTitle').textContent = 'Add Manual Outgoing';
+  document.getElementById('outgoingSubmitBtn').textContent = 'Add Entry';
+  document.getElementById('outgoingCancelEditBtn').style.display = 'none';
+}
+
+function deleteOutgoingEntry(id){
+  if(!confirm('Ye outgoing entry delete karni hai?')) return;
+  let entries = loadManualOutgoing().filter(e=>e.id !== id);
+  saveManualOutgoing(entries);
+  renderCollectionsTable(document.getElementById('incomingHistorySearch').value);
+  refreshMonthModalIfOpen();
+}
+
+function buildIncomingGroups(filterText){
+  const loans = loadLoans();
+  let collections = loadCollections();
+  let manualEntries = loadManualEntries();
+  let outgoingEntries = loadManualOutgoing();
+
+  if(filterText){
+    collections = collections.filter(c=>{
+      const loan = loans.find(l=>l.id === c.loanId);
+      return loan && loan.borrowerName.toLowerCase().includes(filterText);
+    });
+    manualEntries = manualEntries.filter(m => (m.description||'').toLowerCase().includes(filterText));
+    outgoingEntries = outgoingEntries.filter(o => (o.description||'').toLowerCase().includes(filterText));
+  }
+
+  const groups = {};
+  collections.forEach(c=>{
+    const key = monthKey(c.date);
+    if(!groups[key]) groups[key] = { loanEntries: [], manualEntries: [], outgoingEntries: [] };
+    groups[key].loanEntries.push(c);
+  });
+  manualEntries.forEach(m=>{
+    const key = monthKey(m.date);
+    if(!groups[key]) groups[key] = { loanEntries: [], manualEntries: [], outgoingEntries: [] };
+    groups[key].manualEntries.push(m);
+  });
+  outgoingEntries.forEach(o=>{
+    const key = monthKey(o.date);
+    if(!groups[key]) groups[key] = { loanEntries: [], manualEntries: [], outgoingEntries: [] };
+    groups[key].outgoingEntries.push(o);
+  });
+  return groups;
+}
+
+function computeMonthlyBalances(groups){
+  const keys = Object.keys(groups).sort(); // ascending chronological order
+  let running = 0;
+  const balances = {};
+  keys.forEach(key=>{
+    const g = groups[key];
+    const principalTotal = g.loanEntries.reduce((s,c)=>s+parseFloat(c.principal||0),0);
+    const interestTotal = g.loanEntries.reduce((s,c)=>s+parseFloat(c.interest||0),0);
+    const manualTotal = g.manualEntries.reduce((s,m)=>s+parseFloat(m.amount||0),0);
+    const outgoingTotal = (g.outgoingEntries||[]).reduce((s,o)=>s+parseFloat(o.amount||0),0);
+    const net = principalTotal + interestTotal + manualTotal - outgoingTotal;
+    running += net;
+    balances[key] = { net, balance: running };
+  });
+  return balances;
+}
+
+function renderCollectionsTable(filterText){
+  filterText = (filterText || '').toLowerCase();
+  const loans = loadLoans();
+  const groups = buildIncomingGroups(filterText);
+  const wrap = document.getElementById('collectionsTableWrap');
+  const sortedKeys = Object.keys(groups).sort().reverse();
+
+  if(sortedKeys.length === 0){
+    wrap.innerHTML = '<div class="empty">' + (filterText ? 'Is search se koi entry nahi mili.' : 'Abhi tak koi incoming entry nahi hui.') + '</div>';
+    return;
+  }
+
+  // If searching, show a flat combined result list (cuts across months)
+  if(filterText){
+    let html = '<h2 style="font-size:16px;">Search Results</h2>';
+    sortedKeys.forEach(key=>{
+      html += renderMonthDetailTable(key, groups[key], loans, false);
+    });
+    wrap.innerHTML = html;
+    return;
+  }
+
+  // Balances always computed from full (unfiltered) data, so carry-forward stays accurate
+  const balances = computeMonthlyBalances(groups);
+
+  // Month list only — clicking a month opens the popup with its full detail
+  let html = '<h2 style="font-size:16px;">Select a Month</h2>';
+  html += '<table><thead><tr><th>Month</th><th>Principal Collected</th><th>Interest Collected</th><th>Manual Incoming</th><th>Manual Outgoing</th><th>Total Incoming</th><th>Balance</th><th># Entries</th></tr></thead><tbody>';
+  sortedKeys.forEach(key=>{
+    const g = groups[key];
+    const principalTotal = g.loanEntries.reduce((s,c)=>s+parseFloat(c.principal||0),0);
+    const interestTotal = g.loanEntries.reduce((s,c)=>s+parseFloat(c.interest||0),0);
+    const manualTotal = g.manualEntries.reduce((s,m)=>s+parseFloat(m.amount||0),0);
+    const outgoingTotal = g.outgoingEntries.reduce((s,o)=>s+parseFloat(o.amount||0),0);
+    const totalIncoming = interestTotal + manualTotal;
+    const entryCount = g.loanEntries.length + g.manualEntries.length + g.outgoingEntries.length;
+    const balanceValue = balances[key] ? balances[key].balance : 0;
+    html += '<tr>' +
+      '<td><span class="borrower-link" onclick="openMonthDetail(\'' + key + '\')">' + monthLabel(key) + '</span></td>' +
+      '<td>' + fmt(principalTotal) + ' KD</td>' +
+      '<td>' + fmt(interestTotal) + ' KD</td>' +
+      '<td>' + fmt(manualTotal) + ' KD</td>' +
+      '<td>' + fmt(outgoingTotal) + ' KD</td>' +
+      '<td><strong>' + fmt(totalIncoming) + ' KD</strong></td>' +
+      '<td><strong>' + fmt(balanceValue) + ' KD</strong></td>' +
+      '<td>' + entryCount + '</td>' +
+      '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function renderMonthDetailTable(key, g, loans, withHeading, balanceInfo){
+  const principalTotal = g.loanEntries.reduce((s,c)=>s+parseFloat(c.principal||0),0);
+  const interestTotal = g.loanEntries.reduce((s,c)=>s+parseFloat(c.interest||0),0);
+  const manualTotal = g.manualEntries.reduce((s,m)=>s+parseFloat(m.amount||0),0);
+  const outgoingTotal = (g.outgoingEntries||[]).reduce((s,o)=>s+parseFloat(o.amount||0),0);
+  const totalIncoming = interestTotal + manualTotal;
+
+  let html = '';
+  if(withHeading){
+    html += '<h2 style="margin-top:0;">' + monthLabel(key) + '</h2>';
+    html += '<div class="cards" style="margin-top:12px;">' +
+      '<div class="card"><div class="label">Principal Collected</div><div class="value">' + fmt(principalTotal) + ' KD</div></div>' +
+      '<div class="card"><div class="label">Interest Collected</div><div class="value green">' + fmt(interestTotal) + ' KD</div></div>' +
+      '<div class="card"><div class="label">Manual Incoming</div><div class="value">' + fmt(manualTotal) + ' KD</div></div>' +
+      '<div class="card"><div class="label">Manual Outgoing</div><div class="value red">' + fmt(outgoingTotal) + ' KD</div></div>' +
+    '</div>';
+  } else {
+    html += '<div style="margin:18px 0 8px 0; font-weight:700; color:var(--accent-dark); font-size:14px;">' + monthLabel(key) + ' — Principal: ' + fmt(principalTotal) + ' KD, Interest: ' + fmt(interestTotal) + ' KD, Manual In: ' + fmt(manualTotal) + ' KD, Manual Out: ' + fmt(outgoingTotal) + ' KD</div>';
+  }
+
+  const allEntries = [];
+  g.loanEntries.forEach(c=>{
+    const loan = loans.find(l=>l.id === c.loanId);
+    if(parseFloat(c.principal||0) > 0){
+      allEntries.push({ type:'principal', borrower: loan ? loan.borrowerName : 'Deleted loan', amount: c.principal, date: c.date, id: c.id, note: c.note });
+    }
+    if(parseFloat(c.interest||0) > 0){
+      allEntries.push({ type:'interest', borrower: loan ? loan.borrowerName : 'Deleted loan', amount: c.interest, date: c.date, id: c.id, note: c.note });
+    }
+  });
+  g.manualEntries.forEach(m=>{
+    allEntries.push({ type:'manual', borrower: m.description || '-', amount: m.amount, date: m.date, id: m.id, note: '' });
+  });
+  (g.outgoingEntries||[]).forEach(o=>{
+    allEntries.push({ type:'outgoing', borrower: o.description || '-', amount: o.amount, date: o.date, id: o.id, note: '' });
+  });
+  allEntries.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+
+  html += '<table><thead><tr><th>Source</th><th>Borrower / Description</th><th>Amount</th><th>Date</th><th>Note</th><th>Actions</th></tr></thead><tbody>';
+  allEntries.forEach(e=>{
+    const badge = e.type === 'principal' ? '<span class="badge fixed">Principal</span>'
+      : e.type === 'interest' ? '<span class="badge percent">Interest</span>'
+      : e.type === 'outgoing' ? '<span class="badge" style="background:#fdeaea; color:var(--red);">Outgoing</span>'
+      : '<span class="badge fixed">Manual</span>';
+    let editBtn;
+    if(e.type === 'manual'){
+      editBtn = '<button class="secondary" onclick="editManualEntry(\'' + e.id + '\')">Edit</button><button class="danger" onclick="deleteManualEntry(\'' + e.id + '\')">Delete</button>';
+    } else if(e.type === 'outgoing'){
+      editBtn = '<button class="secondary" onclick="editOutgoingEntry(\'' + e.id + '\')">Edit</button><button class="danger" onclick="deleteOutgoingEntry(\'' + e.id + '\')">Delete</button>';
+    } else {
+      editBtn = '<button class="secondary" onclick="editCollection(\'' + e.id + '\')">Edit</button><button class="danger" onclick="deleteCollection(\'' + e.id + '\')">Delete</button>';
+    }
+    html += '<tr><td>' + badge + '</td><td>' + escapeHtml(e.borrower) + '</td><td>' + fmt(e.amount) + ' KD</td><td>' + (e.date || '-') + '</td><td>' + escapeHtml(e.note || '-') + '</td>' +
+      '<td class="row-actions">' + editBtn + '</td></tr>';
+  });
+  html += '</tbody></table>';
+
+  // Highlighted balance banner at the very bottom of the page
+  if(withHeading && balanceInfo){
+    html += '<div class="balance-banner">' +
+      '<div class="label">Balance (carried forward into next month)</div>' +
+      '<div class="value">' + fmt(balanceInfo.balance) + ' KD</div>' +
+      '<div class="helper" style="margin-top:8px;">Is mahine ka net: ' + fmt(balanceInfo.net) + ' KD (Principal + Interest + Manual Incoming − Manual Outgoing)</div>' +
+    '</div>';
+  }
+
+  return html;
+}
+
+let openModalMonthKey = null;
+
+function openMonthDetail(key){
+  const loans = loadLoans();
+  const groups = buildIncomingGroups(''); // full unfiltered data for accurate balance chain
+  if(!groups[key]) return;
+  openModalMonthKey = key;
+  const balances = computeMonthlyBalances(groups);
+  const html = renderMonthDetailTable(key, groups[key], loans, true, balances[key]);
+  document.getElementById('monthDetailContent').innerHTML = html;
+  document.getElementById('monthDetailModal').classList.add('active');
+}
+
+function closeMonthDetail(){
+  openModalMonthKey = null;
+  document.getElementById('monthDetailModal').classList.remove('active');
+  renderCollectionsTable(document.getElementById('incomingHistorySearch').value);
+}
+
+function refreshMonthModalIfOpen(){
+  if(!openModalMonthKey) return;
+  const loans = loadLoans();
+  const groups = buildIncomingGroups('');
+  if(!groups[openModalMonthKey]){
+    // month has no entries left, close the modal
+    closeMonthDetail();
+    return;
+  }
+  const balances = computeMonthlyBalances(groups);
+  const html = renderMonthDetailTable(openModalMonthKey, groups[openModalMonthKey], loans, true, balances[openModalMonthKey]);
+  document.getElementById('monthDetailContent').innerHTML = html;
+}
+
+function deleteCollection(id){
+  if(!confirm('Ye collection entry delete karni hai?')) return;
+  let collections = loadCollections().filter(c=>c.id !== id);
+  saveCollections(collections);
+  renderCollectionsTable(document.getElementById('incomingHistorySearch').value);
+  refreshMonthModalIfOpen();
+  renderDashboard();
+}
+
+document.getElementById('incomingHistorySearch').addEventListener('input', function(){
+  renderCollectionsTable(this.value);
+});
+
+// --- Dashboard ---
+function renderDashboard(){
+  const loans = loadLoans();
+  const collections = loadCollections();
+  const totalLoans = loans.reduce((s,l)=>s+parseFloat(l.loanAmount||0),0);
+  const totalPrincipalCollected = collections.reduce((s,c)=>s+parseFloat(c.principal||0),0);
+  const totalInterestCollected = collections.reduce((s,c)=>s+parseFloat(c.interest||0),0);
+  const outstanding = totalLoans - totalPrincipalCollected;
+  const borrowers = new Set(loans.map(l=>l.borrowerName)).size;
+
+  document.getElementById('dashTotalLoans').textContent = fmt(totalLoans) + ' KD';
+  document.getElementById('dashTotalPrincipalCollected').textContent = fmt(totalPrincipalCollected) + ' KD';
+  document.getElementById('dashTotalInterestCollected').textContent = fmt(totalInterestCollected) + ' KD';
+  document.getElementById('dashOutstanding').textContent = fmt(outstanding) + ' KD';
+  document.getElementById('dashBorrowers').textContent = borrowers;
+
+  const recentWrap = document.getElementById('dashRecent');
+  if(loans.length === 0){
+    recentWrap.innerHTML = '<div class="empty">Abhi koi loan nahi hai. "Give Loan" tab se shuru karo.</div>';
+  } else {
+    let html = '<h2 style="font-size:16px;margin-top:10px;">Recent Loans</h2><table><thead><tr><th>Borrower</th><th>Amount</th><th>Date</th><th>Notes</th></tr></thead><tbody>';
+    loans.slice(-5).reverse().forEach(loan=>{
+      html += '<tr><td>' + escapeHtml(loan.borrowerName) + '</td><td>' + fmt(loan.loanAmount) + ' KD</td><td>' + (loan.dateGiven||'-') + '</td><td>' + escapeHtml(loan.notes || '-') + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    recentWrap.innerHTML = html;
+  }
+
+  renderDashboardSearch(document.getElementById('dashboardSearch').value);
+}
+
+function renderDashboardSearch(query){
+  query = (query || '').toLowerCase().trim();
+  const resultsWrap = document.getElementById('dashSearchResults');
+  if(!query){ resultsWrap.innerHTML = ''; return; }
+  const loans = loadLoans().filter(l => l.borrowerName.toLowerCase().includes(query));
+  if(loans.length === 0){
+    resultsWrap.innerHTML = '<div class="empty">Is naam se koi borrower nahi mila.</div>';
+    return;
+  }
+  let html = '<table><thead><tr><th>Borrower</th><th>Amount</th><th>Date</th><th>Principal Paid</th><th>Interest Paid</th><th>Outstanding</th></tr></thead><tbody>';
+  loans.forEach(loan=>{
+    const principalPaid = principalCollectedForLoan(loan.id);
+    const interestPaid = interestCollectedForLoan(loan.id);
+    const outstanding = loan.loanAmount - principalPaid;
+    html += '<tr><td><span class="borrower-link" onclick="showLoanDetail(\'' + loan.id + '\')">' + escapeHtml(loan.borrowerName) + '</span></td><td>' + fmt(loan.loanAmount) + ' KD</td><td>' + (loan.dateGiven||'-') + '</td><td>' + fmt(principalPaid) + ' KD</td><td>' + fmt(interestPaid) + ' KD</td><td>' + fmt(outstanding) + ' KD</td></tr>';
+  });
+  html += '</tbody></table>';
+  resultsWrap.innerHTML = html;
+}
+
+document.getElementById('dashboardSearch').addEventListener('input', function(){
+  renderDashboardSearch(this.value);
+});
+
+// --- Profit Tab (interest only, NO principal) ---
+let currentProfitMonth = null;
+
+function buildProfitGroups(filterText){
+  const loans = loadLoans();
+  let collections = loadCollections().filter(c => parseFloat(c.interest||0) > 0);
+
+  if(filterText){
+    collections = collections.filter(c=>{
+      const loan = loans.find(l=>l.id === c.loanId);
+      return loan && loan.borrowerName.toLowerCase().includes(filterText);
+    });
+  }
+
+  const groups = {};
+  collections.forEach(c=>{
+    const key = monthKey(c.date);
+    if(!groups[key]) groups[key] = [];
+    const loan = loans.find(l=>l.id === c.loanId);
+    groups[key].push({ borrower: loan ? loan.borrowerName : 'Deleted loan', amount: c.interest, date: c.date, id: c.id });
+  });
+  return groups;
+}
+
+function renderProfitTable(filterText){
+  filterText = (filterText || document.getElementById('profitSearch').value || '').toLowerCase();
+  const groups = buildProfitGroups(filterText);
+  const wrap = document.getElementById('profitTableWrap');
+  const sortedKeys = Object.keys(groups).sort().reverse();
+
+  if(sortedKeys.length === 0){
+    wrap.innerHTML = '<div class="empty">' + (filterText ? 'Is naam se koi profit entry nahi mili.' : 'Abhi tak koi profit (interest) collect nahi hua.') + '</div>';
+    return;
+  }
+
+  // Searching: flat view across months
+  if(filterText){
+    let html = '<h2 style="font-size:16px;">Search Results</h2>';
+    sortedKeys.forEach(key=>{
+      html += renderProfitMonthTable(key, groups[key], false);
+    });
+    wrap.innerHTML = html;
+    return;
+  }
+
+  // Month detail view
+  if(currentProfitMonth && groups[currentProfitMonth]){
+    let html = '<button class="secondary" onclick="backToProfitMonthList()">&larr; Back to Months</button>';
+    html += renderProfitMonthTable(currentProfitMonth, groups[currentProfitMonth], true);
+    wrap.innerHTML = html;
+    return;
+  }
+  if(currentProfitMonth && !groups[currentProfitMonth]){
+    currentProfitMonth = null;
+  }
+
+  // Default: month list
+  let html = '<table><thead><tr><th>Month</th><th>Total Profit</th><th># Entries</th></tr></thead><tbody>';
+  sortedKeys.forEach(key=>{
+    const monthTotal = groups[key].reduce((s,e)=>s+parseFloat(e.amount||0),0);
+    html += '<tr>' +
+      '<td><span class="borrower-link" onclick="openProfitMonth(\'' + key + '\')">' + monthLabel(key) + '</span></td>' +
+      '<td><strong>' + fmt(monthTotal) + ' KD</strong></td>' +
+      '<td>' + groups[key].length + '</td>' +
+      '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function renderProfitMonthTable(key, entries, withHeading){
+  const monthTotal = entries.reduce((s,e)=>s+parseFloat(e.amount||0),0);
+  let html = '';
+  if(withHeading){
+    html += '<div class="cards" style="margin-top:16px; margin-bottom:8px;">' +
+      '<div class="card"><div class="label">Total Profit — ' + monthLabel(key) + '</div><div class="value green">' + fmt(monthTotal) + ' KD</div></div>' +
+    '</div>';
+  } else {
+    html += '<div style="margin:18px 0 8px 0; font-weight:700; color:var(--accent-dark); font-size:14px;">' + monthLabel(key) + ' — Total Profit: ' + fmt(monthTotal) + ' KD</div>';
+  }
+  html += '<table><thead><tr><th>Borrower</th><th>Interest (Profit)</th><th>Date</th></tr></thead><tbody>';
+  entries.slice().sort((a,b)=> (b.date||'').localeCompare(a.date||'')).forEach(e=>{
+    html += '<tr><td>' + escapeHtml(e.borrower) + '</td><td>' + fmt(e.amount) + ' KD</td><td>' + (e.date || '-') + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  return html;
+}
+
+function openProfitMonth(key){
+  currentProfitMonth = key;
+  renderProfitTable(document.getElementById('profitSearch').value);
+}
+
+function backToProfitMonthList(){
+  currentProfitMonth = null;
+  document.getElementById('profitSearch').value = '';
+  renderProfitTable('');
+}
+
+document.getElementById('profitSearch').addEventListener('input', function(){
+  currentProfitMonth = null;
+  renderProfitTable(this.value);
+});
+
+// Set today's date as default for date inputs
+document.getElementById('loanDate').valueAsDate = new Date();
+document.getElementById('collectionDate').valueAsDate = new Date();
+document.getElementById('manualDate').valueAsDate = new Date();
+document.getElementById('outgoingDate').valueAsDate = new Date();
+
+// Initial render
+renderDashboard();
+</script>
+
+</body>
+</html>
