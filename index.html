@@ -400,9 +400,12 @@
     }
     .inline-form{ flex:1 1 100%; }
 
-    /* Tables fit the screen - fewer columns now, so no side scroll needed */
+    /* Main tables (All Loans, month list) fit - few columns */
     table{ font-size:12.5px; width:100%; table-layout:fixed; }
     th, td{ padding:11px 8px; word-break:break-word; }
+    /* Modal detail tables can scroll sideways (many columns) */
+    .modal-box table{ display:block; overflow-x:auto; white-space:nowrap; table-layout:auto; width:100%; -webkit-overflow-scrolling:touch; }
+    .modal-box th, .modal-box td{ white-space:nowrap; word-break:normal; padding:9px 10px; }
     .row-actions button{ padding:6px 9px; font-size:11px !important; margin:0 0 0 4px; }
     .row-actions button:first-child{ margin-left:0; }
     .entry-actions button{ margin:0 6px 0 0 !important; }
@@ -887,6 +890,12 @@ async function pullFromCloud(){
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 function fmt(n){ return Number(n || 0).toFixed(3); }
+function fmtDate(d){
+  if(!d) return '-';
+  const parts = String(d).slice(0,10).split('-');
+  if(parts.length !== 3) return d;
+  return parts[2] + '-' + parts[1] + '-' + parts[0]; // dd-mm-yyyy
+}
 
 // --- Navigation ---
 function switchSection(sectionId){
@@ -1041,7 +1050,7 @@ function showLoanDetail(loanId){
     '<div class="card"><div class="label">Interest Paid</div><div class="value green">' + fmt(interestPaid) + ' KD</div></div>' +
     '<div class="card"><div class="label">Outstanding</div><div class="value red">' + fmt(outstanding) + ' KD</div></div>' +
   '</div>';
-  html += '<p style="font-size:13px;"><strong>Date Given:</strong> ' + (loan.dateGiven || '-') +
+  html += '<p style="font-size:13px;"><strong>Date Given:</strong> ' + fmtDate(loan.dateGiven) +
     (loan.borrowerPhone ? ' &nbsp;|&nbsp; <strong>Phone:</strong> ' + escapeHtml(loan.borrowerPhone) : '') +
     (loan.notes ? '<br><strong>Notes:</strong> ' + escapeHtml(loan.notes) : '') + '</p>';
 
@@ -1056,7 +1065,7 @@ function showLoanDetail(loanId){
       if(parseFloat(c.interest||0) > 0) parts.push('<span class="badge percent">Interest</span> ' + fmt(c.interest) + ' KD');
       html += '<div class="entry-card">' +
         '<div class="entry-top">' +
-          '<div class="entry-name" style="font-size:12px; color:var(--muted);">' + (c.date || '-') + '</div>' +
+          '<div class="entry-name" style="font-size:12px; color:var(--muted);">' + fmtDate(c.date) + '</div>' +
         '</div>' +
         '<div class="entry-meta" style="margin-top:4px;">' + parts.join(' &nbsp; ') + '</div>' +
         (c.note ? '<div class="entry-note" style="margin-top:4px;">' + escapeHtml(c.note) + '</div>' : '') +
@@ -1101,7 +1110,7 @@ function renderLoanSuggestions(query){
   matches.forEach(loan=>{
     html += '<div class="suggestion-item" onclick="selectLoanForCollection(\'' + loan.id + '\')">' +
       escapeHtml(loan.borrowerName) +
-      '<div class="sub">' + fmt(loan.loanAmount) + ' KD &middot; ' + (loan.dateGiven || '-') + '</div>' +
+      '<div class="sub">' + fmt(loan.loanAmount) + ' KD &middot; ' + fmtDate(loan.dateGiven) + '</div>' +
       '</div>';
   });
   html += '</div>';
@@ -1475,14 +1484,12 @@ function renderMonthDetailTable(key, g, loans, withHeading, balanceInfo){
   });
   allEntries.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
 
-  html += '<div class="entry-list">';
+  html += '<table><thead><tr><th>Source</th><th>Borrower / Description</th><th>Amount</th><th>Date</th><th>Note</th><th>Actions</th></tr></thead><tbody>';
   allEntries.forEach(e=>{
     const badge = e.type === 'principal' ? '<span class="badge fixed">Principal</span>'
       : e.type === 'interest' ? '<span class="badge percent">Interest</span>'
       : e.type === 'outgoing' ? '<span class="badge" style="background:#fdeaea; color:var(--red);">Outgoing</span>'
       : '<span class="badge fixed">Manual In</span>';
-    const amtColor = e.type === 'outgoing' ? 'var(--red)' : 'var(--green)';
-    const amtSign = e.type === 'outgoing' ? '−' : '+';
     let editBtn;
     if(e.type === 'manual'){
       editBtn = '<button class="secondary" onclick="editManualEntry(\'' + e.id + '\')">Edit</button><button class="danger" onclick="deleteManualEntry(\'' + e.id + '\')">Delete</button>';
@@ -1491,18 +1498,10 @@ function renderMonthDetailTable(key, g, loans, withHeading, balanceInfo){
     } else {
       editBtn = '<button class="secondary" onclick="editCollection(\'' + e.id + '\')">Edit</button><button class="danger" onclick="deleteCollection(\'' + e.id + '\')">Delete</button>';
     }
-    html += '<div class="entry-card">' +
-      '<div class="entry-top">' +
-        '<div class="entry-name">' + escapeHtml(e.borrower) + '</div>' +
-        '<div class="entry-amt" style="color:' + amtColor + ';">' + amtSign + fmt(e.amount) + ' KD</div>' +
-      '</div>' +
-      '<div class="entry-meta">' + badge + ' <span class="entry-date">' + (e.date || '-') + '</span>' +
-        (e.note ? ' <span class="entry-note">• ' + escapeHtml(e.note) + '</span>' : '') +
-      '</div>' +
-      '<div class="entry-actions row-actions">' + editBtn + '</div>' +
-    '</div>';
+    html += '<tr><td>' + badge + '</td><td>' + escapeHtml(e.borrower) + '</td><td>' + fmt(e.amount) + ' KD</td><td>' + fmtDate(e.date) + '</td><td>' + escapeHtml(e.note || '-') + '</td>' +
+      '<td class="row-actions">' + editBtn + '</td></tr>';
   });
-  html += '</div>';
+  html += '</tbody></table>';
 
   // Highlighted balance banner at the very bottom of the page
   if(withHeading && balanceInfo){
@@ -1585,7 +1584,7 @@ function renderDashboard(){
   } else {
     let html = '<h2 style="font-size:16px;margin-top:10px;">Recent Loans</h2><table><thead><tr><th>Borrower</th><th>Amount</th><th>Date</th><th>Notes</th></tr></thead><tbody>';
     loans.slice(-5).reverse().forEach(loan=>{
-      html += '<tr><td>' + escapeHtml(loan.borrowerName) + '</td><td>' + fmt(loan.loanAmount) + ' KD</td><td>' + (loan.dateGiven||'-') + '</td><td>' + escapeHtml(loan.notes || '-') + '</td></tr>';
+      html += '<tr><td>' + escapeHtml(loan.borrowerName) + '</td><td>' + fmt(loan.loanAmount) + ' KD</td><td>' + fmtDate(loan.dateGiven) + '</td><td>' + escapeHtml(loan.notes || '-') + '</td></tr>';
     });
     html += '</tbody></table>';
     recentWrap.innerHTML = html;
@@ -1608,7 +1607,7 @@ function renderDashboardSearch(query){
     const principalPaid = principalCollectedForLoan(loan.id);
     const interestPaid = interestCollectedForLoan(loan.id);
     const outstanding = loan.loanAmount - principalPaid;
-    html += '<tr><td><span class="borrower-link" onclick="showLoanDetail(\'' + loan.id + '\')">' + escapeHtml(loan.borrowerName) + '</span></td><td>' + fmt(loan.loanAmount) + ' KD</td><td>' + (loan.dateGiven||'-') + '</td><td>' + fmt(principalPaid) + ' KD</td><td>' + fmt(interestPaid) + ' KD</td><td>' + fmt(outstanding) + ' KD</td></tr>';
+    html += '<tr><td><span class="borrower-link" onclick="showLoanDetail(\'' + loan.id + '\')">' + escapeHtml(loan.borrowerName) + '</span></td><td>' + fmt(loan.loanAmount) + ' KD</td><td>' + fmtDate(loan.dateGiven) + '</td><td>' + fmt(principalPaid) + ' KD</td><td>' + fmt(interestPaid) + ' KD</td><td>' + fmt(outstanding) + ' KD</td></tr>';
   });
   html += '</tbody></table>';
   resultsWrap.innerHTML = html;
@@ -1700,7 +1699,7 @@ function renderProfitMonthTable(key, entries, withHeading){
   }
   html += '<table><thead><tr><th>Borrower</th><th>Interest (Profit)</th><th>Date</th></tr></thead><tbody>';
   entries.slice().sort((a,b)=> (b.date||'').localeCompare(a.date||'')).forEach(e=>{
-    html += '<tr><td>' + escapeHtml(e.borrower) + '</td><td>' + fmt(e.amount) + ' KD</td><td>' + (e.date || '-') + '</td></tr>';
+    html += '<tr><td>' + escapeHtml(e.borrower) + '</td><td>' + fmt(e.amount) + ' KD</td><td>' + fmtDate(e.date) + '</td></tr>';
   });
   html += '</tbody></table>';
   return html;
@@ -1747,17 +1746,53 @@ let currentLoanExportName = 'Shree-Loan';
 let currentMonthExportName = 'Shree-Month';
 
 async function exportElement(elementId, fileName, type){
-  const el = document.getElementById(elementId);
-  if(!el){ return; }
+  const src = document.getElementById(elementId);
+  if(!src){ return; }
   if(typeof html2canvas === 'undefined'){ alert('Export library load nahi hui. Internet check karo aur dubara try karo.'); return; }
   showToast('⏳ Export ho raha hai...');
+
+  // Build a clean off-screen container with a fixed comfortable width so nothing is cut
+  const holder = document.createElement('div');
+  holder.style.position = 'fixed';
+  holder.style.left = '-10000px';
+  holder.style.top = '0';
+  holder.style.width = '760px';
+  holder.style.background = '#ffffff';
+  holder.style.padding = '28px';
+  holder.style.fontFamily = "'Plus Jakarta Sans', sans-serif";
+  holder.style.color = '#2b2926';
+  holder.style.boxSizing = 'border-box';
+
+  // Header with app name
+  const header = document.createElement('div');
+  header.style.cssText = 'display:flex;align-items:center;gap:10px;border-bottom:2px solid #C96442;padding-bottom:12px;margin-bottom:18px;';
+  header.innerHTML = '<div style="font-family:\'Yatra One\',serif;font-size:26px;color:#a8532f;">श्री Shree</div><div style="font-size:12px;color:#8a8579;margin-left:auto;">' + fmtDate(new Date().toISOString()) + '</div>';
+  holder.appendChild(header);
+
+  // Clone the content, force tables to full width (no scroll box)
+  const clone = src.cloneNode(true);
+  clone.querySelectorAll('table').forEach(t=>{
+    t.style.display = 'table';
+    t.style.width = '100%';
+    t.style.tableLayout = 'auto';
+    t.style.whiteSpace = 'normal';
+    t.style.overflow = 'visible';
+  });
+  clone.querySelectorAll('th, td').forEach(c=>{
+    c.style.whiteSpace = 'nowrap';
+    c.style.overflow = 'visible';
+    c.style.textOverflow = 'clip';
+  });
+  // Remove action buttons from export (Edit/Delete not needed in a printout)
+  clone.querySelectorAll('.row-actions').forEach(a=> a.remove());
+  holder.appendChild(clone);
+  document.body.appendChild(holder);
+
   try{
-    const canvas = await html2canvas(el, {
+    const canvas = await html2canvas(holder, {
       scale: 2,
       backgroundColor: '#ffffff',
-      useCORS: true,
-      windowWidth: el.scrollWidth,
-      windowHeight: el.scrollHeight
+      useCORS: true
     });
     if(type === 'png'){
       const link = document.createElement('a');
@@ -1778,7 +1813,6 @@ async function exportElement(elementId, fileName, type){
       let position = margin;
       pdf.addImage(imgData, 'PNG', margin, position, imgW, imgH);
       heightLeft -= (pageH - margin*2);
-      // Add extra pages if content is tall
       while(heightLeft > 0){
         position = margin - (imgH - heightLeft);
         pdf.addPage();
@@ -1791,6 +1825,8 @@ async function exportElement(elementId, fileName, type){
   }catch(e){
     console.error('Export error:', e);
     showToast('⚠️ Export failed');
+  }finally{
+    document.body.removeChild(holder);
   }
 }
 
