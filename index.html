@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#C96442">
 <meta name="apple-mobile-web-app-title" content="Shree">
@@ -325,7 +326,7 @@
   /* ======================= MOBILE RESPONSIVE ======================= */
   .mobile-topbar{ display:none; }
   @media (max-width: 820px){
-    body{ flex-direction:column; padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+    body{ flex-direction:column; padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }
 
     /* Hide desktop sidebar, show mobile topbar + bottom nav */
     .sidebar{
@@ -402,13 +403,14 @@
       border-top:1px solid var(--border);
       z-index:600;
       padding-bottom: env(safe-area-inset-bottom, 0px);
-      box-shadow:0 -2px 10px rgba(0,0,0,0.08);
+      box-shadow:0 -2px 12px rgba(0,0,0,0.06);
     }
     .bottom-nav .bn-item{
       flex:1;
       text-align:center;
-      padding:8px 2px calc(10px + env(safe-area-inset-bottom, 0px)) 2px;
-      font-size:10px;
+      padding:9px 2px 8px 2px;
+      font-size:10.5px;
+      font-weight:600;
       color:var(--muted);
       cursor:pointer;
       border:none;
@@ -416,10 +418,16 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap:3px;
+      gap:4px;
+      transition: color .12s;
     }
-    .bottom-nav .bn-item .bn-ico{ font-size:18px; line-height:1; }
-    .bottom-nav .bn-item.active{ color:var(--accent); font-weight:700; }
+    .bottom-nav .bn-item .bn-ico{
+      width:23px;
+      height:23px;
+      display:block;
+    }
+    .bottom-nav .bn-item.active{ color:var(--accent); }
+    .bottom-nav .bn-item.active .bn-ico{ stroke:var(--accent); }
   }
 
   /* Base: hidden on desktop, overridden by mobile media query above */
@@ -634,12 +642,30 @@
 
 <!-- MOBILE BOTTOM NAV -->
 <div class="bottom-nav">
-  <button class="bn-item active" data-section="dashboard"><span class="bn-ico">🏠</span>Home</button>
-  <button class="bn-item" data-section="giveLoan"><span class="bn-ico">➕</span>Loan</button>
-  <button class="bn-item" data-section="allLoans"><span class="bn-ico">📋</span>Loans</button>
-  <button class="bn-item" data-section="addCollection"><span class="bn-ico">💰</span>Collect</button>
-  <button class="bn-item" data-section="collectionHistory"><span class="bn-ico">📅</span>History</button>
-  <button class="bn-item" data-section="profitTab"><span class="bn-ico">📈</span>Profit</button>
+  <button class="bn-item active" data-section="dashboard">
+    <svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg>
+    Home
+  </button>
+  <button class="bn-item" data-section="giveLoan">
+    <svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+    Loan
+  </button>
+  <button class="bn-item" data-section="allLoans">
+    <svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>
+    Loans
+  </button>
+  <button class="bn-item" data-section="addCollection">
+    <svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="13" rx="2"/><path d="M2.5 10h19"/><circle cx="12" cy="14" r="0.6" fill="currentColor"/></svg>
+    Collect
+  </button>
+  <button class="bn-item" data-section="collectionHistory">
+    <svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16M8 3v4M16 3v4"/></svg>
+    History
+  </button>
+  <button class="bn-item" data-section="profitTab">
+    <svg class="bn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 7-7"/><path d="M17 8h4v4"/></svg>
+    Profit
+  </button>
 </div>
 
 
