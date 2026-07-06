@@ -2013,10 +2013,28 @@ async function exportNode(src, fileName, type){
     c.style.overflow = 'visible';
     c.style.textOverflow = 'clip';
   });
+  // Export me text thoda bada + bold (PDF/Picture dono me)
+  clone.querySelectorAll('td').forEach(c=>{
+    c.style.fontSize = '15.5px';
+    c.style.fontWeight = '700';
+    c.style.color = '#1c1a17';
+  });
+  clone.querySelectorAll('th').forEach(c=>{
+    c.style.fontSize = '12.5px';
+    c.style.fontWeight = '800';
+    c.style.color = '#3d3a32';
+  });
   // Remove action buttons from export (Edit/Delete not needed in a printout)
   clone.querySelectorAll('.row-actions').forEach(a=> a.remove());
   holder.appendChild(clone);
   document.body.appendChild(holder);
+
+  // Agar table holder se zyada wide hai (jaise Status column cut ho raha tha),
+  // to holder ki width automatically badha do taaki poora content dikhe
+  const neededWidth = Math.max(holder.scrollWidth, clone.scrollWidth ? clone.scrollWidth + 56 : 0);
+  if(neededWidth > holder.offsetWidth){
+    holder.style.width = (neededWidth + 12) + 'px';
+  }
 
   try{
     const canvas = await html2canvas(holder, {
