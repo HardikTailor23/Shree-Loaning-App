@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#C96442">
+<meta name="theme-color" content="#0D1117">
 <meta name="apple-mobile-web-app-title" content="Shree">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTEyIiBmaWxsPSIjRkFGOUY1Ii8+CjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTgwIiBmaWxsPSIjRkZGM0U4IiBzdHJva2U9IiNDOTY0NDIiIHN0cm9rZS13aWR0aD0iMTQiLz4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2E4NTMyZiIgc3Ryb2tlLXdpZHRoPSI1IiBvcGFjaXR5PSIwLjQiLz4KPGcgZmlsbD0iI0M5NjQ0MiIgb3BhY2l0eT0iMC43Ij4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iOTQiIHI9IjkiLz4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iNDE4IiByPSI5Ii8+CjxjaXJjbGUgY3g9Ijk0IiBjeT0iMjU2IiByPSI5Ii8+CjxjaXJjbGUgY3g9IjQxOCIgY3k9IjI1NiIgcj0iOSIvPgo8L2c+Cjx0ZXh0IHg9IjI1NiIgeT0iMzMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iMjIwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjYTg1MzJmIj7gpLbgpY3gpLDgpYA8L3RleHQ+Cjwvc3ZnPgo=">
@@ -20,16 +20,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root{
-    --bg: #FAF9F5;
-    --sidebar: #F0EEE6;
-    --accent: #C96442;
-    --accent-dark: #a8532f;
-    --text: #1c1a17;
-    --muted: #6b6557;
-    --border: #e5e1d8;
-    --card: #ffffff;
-    --green: #3f7d51;
-    --red: #c0392b;
+    --bg: #0D1117;
+    --sidebar: #12181F;
+    --accent: #FF8A50;
+    --accent-dark: #FFA372;
+    --text: #E8EDF3;
+    --muted: #8b98a7;
+    --border: #1d2733;
+    --card: #151D27;
+    --green: #9fb0c2;
+    --red: #ff6b5e;
   }
   *{box-sizing:border-box;}
   body{
@@ -88,10 +88,10 @@
     border-left:3px solid transparent;
     transition: all .15s;
   }
-  .nav-item:hover{ background: rgba(201,100,66,0.08); }
+  .nav-item:hover{ background: rgba(255,138,80,0.10); }
   .nav-item.active{
     border-left:3px solid var(--accent);
-    background: rgba(201,100,66,0.12);
+    background: rgba(255,138,80,0.14);
     color: var(--accent-dark);
     font-weight:600;
   }
@@ -142,7 +142,7 @@
     border-radius:8px;
     font-size:14px;
     font-family:inherit;
-    background:#fff;
+    background:#0f151c;
     color:var(--text);
   }
   textarea{ resize:vertical; min-height:60px; }
@@ -164,13 +164,13 @@
   }
   .radio-option.selected{
     border-color: var(--accent);
-    background: rgba(201,100,66,0.1);
+    background: rgba(255,138,80,0.12);
     color: var(--accent-dark);
   }
   .radio-option input{ display:none; }
   button{
     background: var(--accent);
-    color:#fff;
+    color:#1c0a02;
     border:none;
     padding:11px 22px;
     border-radius:8px;
@@ -185,7 +185,7 @@
     color: var(--muted);
     border:1px solid var(--border);
   }
-  button.danger{ background: var(--red); }
+  button.danger{ background: var(--red); color:#fff; }
   table{
     width:100%;
     border-collapse:collapse;
@@ -206,7 +206,7 @@
     font-size:11px;
     text-transform:uppercase;
     letter-spacing:.03em;
-    color:#4d483d;
+    color:#8b98a7;
     font-weight:700;
   }
   tr:last-child td{ border-bottom:none; }
@@ -217,8 +217,8 @@
     font-size:11px;
     font-weight:600;
   }
-  .badge.percent{ background:#e8f0e9; color:var(--green); }
-  .badge.fixed{ background:#fdeee9; color:var(--accent-dark); }
+  .badge.percent{ background:rgba(159,176,194,.14); color:var(--green); }
+  .badge.fixed{ background:rgba(255,138,80,.14); color:var(--accent-dark); }
   .row-actions button{
     margin:0 4px 0 0;
     padding:6px 12px;
@@ -247,7 +247,7 @@
     display:none;
     position:fixed;
     top:0; left:0; right:0; bottom:0;
-    background:rgba(0,0,0,0.4);
+    background:rgba(0,0,0,0.65);
     z-index:100;
     align-items:center;
     justify-content:center;
@@ -287,14 +287,18 @@
     min-width:300px;
   }
   .inline-form label{ margin-top:10px; }
+  .card .value, .entry-amt, td, .balance-banner .value, .opening-balance-banner .value{ font-variant-numeric: tabular-nums; }
   .balance-banner{
-    background: linear-gradient(135deg, rgba(201,100,66,0.14), rgba(63,125,81,0.12));
+    position:relative;
+    overflow:hidden;
+    background: linear-gradient(135deg, rgba(255,138,80,0.16), rgba(159,176,194,0.08));
     border:2px solid var(--accent);
     border-radius:12px;
     padding:20px 24px;
     margin-top:24px;
     text-align:center;
   }
+  .balance-banner::after{ content:''; position:absolute; top:-55px; right:-55px; width:170px; height:170px; border-radius:50%; background:radial-gradient(circle, rgba(255,138,80,.20), transparent 70%); pointer-events:none; }
   .balance-banner .label{
     font-size:13px;
     color:var(--muted);
@@ -309,7 +313,7 @@
   }
   .entry-list{ margin:12px 0; }
   .entry-card{
-    background:#fff;
+    background:var(--card);
     border:1px solid var(--border);
     border-radius:10px;
     padding:12px 14px;
@@ -332,13 +336,13 @@
     position:absolute;
     left:0; right:0;
     top:2px;
-    background:#fff;
+    background:#1a222c;
     border:1px solid var(--border);
     border-radius:8px;
     max-height:220px;
     overflow-y:auto;
     z-index:20;
-    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    box-shadow:0 8px 20px rgba(0,0,0,0.5);
   }
   .suggestion-item{
     padding:10px 12px;
@@ -347,12 +351,12 @@
     border-bottom:1px solid var(--border);
   }
   .suggestion-item:last-child{ border-bottom:none; }
-  .suggestion-item:hover{ background: rgba(201,100,66,0.08); }
+  .suggestion-item:hover{ background: rgba(255,138,80,0.10); }
   .suggestion-item .sub{ font-size:11px; color:var(--muted); }
   /* ---- Notes cards ---- */
   .notes-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:14px; margin-top:16px; max-width:900px; }
   .note-card{
-    background:#fff;
+    background:var(--card);
     border:1px solid var(--border);
     border-left:4px solid var(--accent);
     border-radius:12px;
@@ -379,7 +383,7 @@
   .note-card .note-actions{ margin-top:10px; display:flex; gap:6px; }
   .note-card .note-actions button{ margin-top:0; padding:6px 14px; font-size:12px; }
   .opening-balance-banner{
-    background:#fff;
+    background:var(--card);
     border:2px dashed var(--accent);
     border-radius:12px;
     padding:14px 20px;
@@ -476,11 +480,11 @@
       display:flex !important;
       position:fixed;
       bottom:0; left:0; right:0;
-      background: #fff;
+      background: #12181F;
       border-top:1px solid var(--border);
       z-index:600;
       padding-bottom: env(safe-area-inset-bottom, 0px);
-      box-shadow:0 -2px 12px rgba(0,0,0,0.06);
+      box-shadow:0 -4px 16px rgba(0,0,0,0.45);
     }
     .bottom-nav .bn-item{
       flex:1;
@@ -518,8 +522,8 @@
 
 <div class="mobile-topbar">
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="50" cy="50" r="38" fill="#FFF3E8" stroke="#C96442" stroke-width="3"/>
-    <text x="50" y="66" text-anchor="middle" font-family="'Yatra One', serif" font-size="46" fill="#a8532f">श्री</text>
+    <circle cx="50" cy="50" r="38" fill="#1c1005" stroke="#FF8A50" stroke-width="3"/>
+    <text x="50" y="66" text-anchor="middle" font-family="'Yatra One', serif" font-size="46" fill="#FF8A50">श्री</text>
   </svg>
   <div>
     <div class="mt-name">Shree</div>
@@ -532,12 +536,12 @@
   <svg width="64" height="64" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <radialGradient id="shreeBg" cx="50%" cy="45%" r="65%">
-        <stop offset="0%" stop-color="#FFF8F0"/>
-        <stop offset="100%" stop-color="#F0E4D6"/>
+        <stop offset="0%" stop-color="#22160c"/>
+        <stop offset="100%" stop-color="#140d06"/>
       </radialGradient>
     </defs>
     <!-- outer sunburst / rangoli rays -->
-    <g stroke="#C96442" stroke-width="1.4" opacity="0.55">
+    <g stroke="#FF8A50" stroke-width="1.4" opacity="0.55">
       <line x1="50" y1="2" x2="50" y2="10"/>
       <line x1="50" y1="90" x2="50" y2="98"/>
       <line x1="2" y1="50" x2="10" y2="50"/>
@@ -548,17 +552,17 @@
       <line x1="78.3" y1="21.7" x2="84.2" y2="15.8"/>
     </g>
     <!-- main circle -->
-    <circle cx="50" cy="50" r="38" fill="url(#shreeBg)" stroke="#C96442" stroke-width="2.5"/>
-    <circle cx="50" cy="50" r="32" fill="none" stroke="#a8532f" stroke-width="1" opacity="0.4"/>
+    <circle cx="50" cy="50" r="38" fill="url(#shreeBg)" stroke="#FF8A50" stroke-width="2.5"/>
+    <circle cx="50" cy="50" r="32" fill="none" stroke="#FFA372" stroke-width="1" opacity="0.4"/>
     <!-- small lotus-petal dots around inner ring -->
-    <g fill="#C96442" opacity="0.7">
+    <g fill="#FF8A50" opacity="0.7">
       <circle cx="50" cy="15" r="1.8"/>
       <circle cx="50" cy="85" r="1.8"/>
       <circle cx="15" cy="50" r="1.8"/>
       <circle cx="85" cy="50" r="1.8"/>
     </g>
     <!-- Shree glyph -->
-    <text x="50" y="66" text-anchor="middle" font-family="'Yatra One', 'Noto Serif Devanagari', serif" font-size="46" fill="#a8532f">श्री</text>
+    <text x="50" y="66" text-anchor="middle" font-family="'Yatra One', 'Noto Serif Devanagari', serif" font-size="46" fill="#FF8A50">श्री</text>
   </svg>
   <div class="app-name">Shree</div>
   <div class="app-tagline">Loan &amp; Ledger Manager</div>
@@ -798,23 +802,23 @@
 <div id="loginGate" style="display:none; position:fixed; inset:0; z-index:1000; background:var(--bg); align-items:center; justify-content:center; flex-direction:column; padding:24px;">
   <div style="max-width:360px; width:100%; text-align:center;">
     <svg width="90" height="90" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:12px;">
-      <circle cx="50" cy="50" r="38" fill="#FFF3E8" stroke="#C96442" stroke-width="3"/>
-      <text x="50" y="66" text-anchor="middle" font-family="'Yatra One', serif" font-size="46" fill="#a8532f">श्री</text>
+      <circle cx="50" cy="50" r="38" fill="#1c1005" stroke="#FF8A50" stroke-width="3"/>
+      <text x="50" y="66" text-anchor="middle" font-family="'Yatra One', serif" font-size="46" fill="#FF8A50">श्री</text>
     </svg>
     <h1 style="font-family:'Yatra One', serif; color:var(--accent-dark); margin:0 0 4px 0; font-size:30px;">Shree</h1>
     <div style="color:var(--muted); font-size:12px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:24px;">Loan &amp; Ledger Manager</div>
-    <div style="background:#fff; border:1px solid var(--border); border-radius:14px; padding:22px; text-align:left;">
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px; text-align:left;">
       <label style="display:block; font-size:13px; color:var(--muted); font-weight:600; margin-bottom:6px;">Password</label>
-      <input type="password" id="loginPassword" placeholder="Enter password" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:10px; font-size:16px;" onkeydown="if(event.key==='Enter') doLogin()">
+      <input type="password" id="loginPassword" placeholder="Enter password" style="width:100%; padding:12px; border:1px solid var(--border); border-radius:10px; font-size:16px; background:#0f151c; color:var(--text);" onkeydown="if(event.key==='Enter') doLogin()">
       <div id="loginError" style="color:var(--red); font-size:12px; margin-top:8px; display:none;">Galat password. Dubara try karo.</div>
-      <button onclick="doLogin()" style="width:100%; margin-top:16px; background:var(--accent); color:#fff; border:none; padding:13px; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer;">Login</button>
+      <button onclick="doLogin()" style="width:100%; margin-top:16px; background:var(--accent); color:#1c0a02; border:none; padding:13px; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer;">Login</button>
     </div>
     <div style="color:var(--muted); font-size:11px; margin-top:16px;">Data cloud pe sync hota hai (Supabase)</div>
   </div>
 </div>
 
 <!-- SYNC TOAST -->
-<div id="syncToast" style="display:none; position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:var(--text); color:#fff; padding:9px 18px; border-radius:20px; font-size:12px; z-index:900; box-shadow:0 4px 14px rgba(0,0,0,0.2);"></div>
+<div id="syncToast" style="display:none; position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#223042; color:#E8EDF3; padding:9px 18px; border:1px solid #2e4258; border-radius:20px; font-size:12px; z-index:900; box-shadow:0 4px 14px rgba(0,0,0,0.2);"></div>
 
 <script>
 // ===================== SUPABASE CONFIG =====================
@@ -1590,7 +1594,7 @@ function renderMonthDetailTable(key, g, loans, withHeading, balanceInfo){
   allEntries.forEach(e=>{
     const badge = e.type === 'principal' ? '<span class="badge fixed">Principal</span>'
       : e.type === 'interest' ? '<span class="badge percent">Interest</span>'
-      : e.type === 'outgoing' ? '<span class="badge" style="background:#fdeaea; color:var(--red);">Outgoing</span>'
+      : e.type === 'outgoing' ? '<span class="badge" style="background:rgba(255,107,94,.14); color:var(--red);">Outgoing</span>'
       : '<span class="badge fixed">Manual In</span>';
     let editBtn;
     if(e.type === 'manual'){
@@ -1964,7 +1968,7 @@ function exportAllLoans(type){
       '<td>' + status + '</td>' +
       '</tr>';
   });
-  html += '<tr style="background:#fdeee9;">' +
+  html += '<tr style="background:#fdeee9; color:#1c1a17;">' +
     '<td></td><td><strong>TOTAL</strong></td>' +
     '<td><strong>' + fmt(totalPrincipalAmt) + ' KD</strong></td><td></td>' +
     '<td><strong>' + fmt(totalPrincipalColl) + ' KD</strong></td>' +
@@ -2024,6 +2028,30 @@ async function exportNode(src, fileName, type){
     c.style.fontWeight = '800';
     c.style.color = '#3d3a32';
   });
+  // ===== EXPORT HAMESHA LIGHT (PAPER) STYLE ME - app dark ho tab bhi =====
+  clone.querySelectorAll('table').forEach(t=>{ t.style.background='#ffffff'; t.style.border='1px solid #e5e1d8'; });
+  clone.querySelectorAll('th').forEach(c=>{ c.style.background='#F0EEE6'; c.style.borderBottom='1px solid #e5e1d8'; });
+  clone.querySelectorAll('td').forEach(c=>{
+    const tr = c.parentElement;
+    const trHasBg = tr && (tr.getAttribute('style')||'').indexOf('background') !== -1;
+    if(!trHasBg){ c.style.background='#ffffff'; }
+    c.style.borderBottom='1px solid #e5e1d8';
+  });
+  clone.querySelectorAll('h1,h2,h3,h4').forEach(h=>{ h.style.color='#1c1a17'; });
+  clone.querySelectorAll('.helper').forEach(el=>{ el.style.color='#6b6557'; });
+  clone.querySelectorAll('.card').forEach(c=>{ c.style.background='#ffffff'; c.style.border='1px solid #e5e1d8'; });
+  clone.querySelectorAll('.card .label').forEach(el=>{ el.style.color='#6b6557'; });
+  clone.querySelectorAll('.card .value').forEach(el=>{ el.style.color='#1c1a17'; });
+  clone.querySelectorAll('.card .value.green').forEach(el=>{ el.style.color='#3f7d51'; });
+  clone.querySelectorAll('.card .value.red').forEach(el=>{ el.style.color='#c0392b'; });
+  clone.querySelectorAll('.balance-banner').forEach(b=>{ b.style.background='#fdf3ec'; b.style.border='2px solid #C96442'; });
+  clone.querySelectorAll('.opening-balance-banner').forEach(b=>{ b.style.background='#ffffff'; b.style.border='2px dashed #C96442'; });
+  clone.querySelectorAll('.balance-banner .label, .opening-balance-banner .label').forEach(el=>{ el.style.color='#6b6557'; });
+  clone.querySelectorAll('.balance-banner .value, .opening-balance-banner .value').forEach(el=>{ el.style.color='#a8532f'; });
+  clone.querySelectorAll('.badge').forEach(b=>{ b.style.background='#f0ede4'; b.style.color='#4d483d'; });
+  clone.querySelectorAll('.entry-card').forEach(c=>{ c.style.background='#ffffff'; c.style.border='1px solid #e5e1d8'; });
+  clone.querySelectorAll('.entry-card, .entry-name, .entry-amt, .entry-note').forEach(el=>{ el.style.color='#1c1a17'; });
+  clone.querySelectorAll('.entry-meta, .entry-date').forEach(el=>{ el.style.color='#6b6557'; });
   // Remove action buttons from export (Edit/Delete not needed in a printout)
   clone.querySelectorAll('.row-actions').forEach(a=> a.remove());
   holder.appendChild(clone);
@@ -2084,7 +2112,7 @@ async function exportNode(src, fileName, type){
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js').catch(() => {
     const swCode = `
-      const CACHE = 'shree-v2';
+      const CACHE = 'shree-v3';
       self.addEventListener('install', e => { self.skipWaiting(); });
       self.addEventListener('activate', e => { e.waitUntil(self.clients.claim()); });
       self.addEventListener('fetch', e => {
