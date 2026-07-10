@@ -485,6 +485,15 @@
       background: #FDF6E7;
       border-top:2px solid var(--gold);
       z-index:600;
+      transform:translateY(110%);
+      opacity:0;
+      pointer-events:none;
+      transition: transform .25s ease, opacity .25s ease;
+    }
+    .bottom-nav.nav-visible{
+      transform:translateY(0);
+      opacity:1;
+      pointer-events:auto;
       padding-bottom: env(safe-area-inset-bottom, 0px);
       box-shadow:0 -2px 12px rgba(0,0,0,0.06);
     }
@@ -1007,6 +1016,21 @@ document.querySelectorAll('.nav-item').forEach(item=>{
 document.querySelectorAll('.bn-item').forEach(item=>{
   item.addEventListener('click', ()=> switchSection(item.dataset.section));
 });
+
+// --- Auto-hide bottom nav (mobile): sirf screen touch/use ke waqt dikhe ---
+(function(){
+  const nav = document.querySelector('.bottom-nav');
+  if(!nav) return;
+  let hideTimer = null;
+  function showNav(){
+    nav.classList.add('nav-visible');
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(()=> nav.classList.remove('nav-visible'), 3000);
+  }
+  ['touchstart','touchmove','pointerdown','scroll','click','keydown'].forEach(ev=>{
+    window.addEventListener(ev, showNav, { passive:true });
+  });
+})();
 
 // --- Give Loan form ---
 let editingLoanId = null;
