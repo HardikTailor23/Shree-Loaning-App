@@ -229,6 +229,50 @@
     padding:6px 12px;
     font-size:12px;
   }
+  /* ---- Action dropdown ---- */
+  .action-menu{ position:relative; display:inline-block; }
+  .action-btn{
+    margin:0;
+    padding:6px 12px;
+    font-size:12px;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+  }
+  .action-btn svg{ width:12px; height:12px; }
+  .action-dropdown{
+    display:none;
+    position:absolute;
+    right:0;
+    top:calc(100% + 4px);
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:10px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.14);
+    z-index:80;
+    min-width:140px;
+    overflow:hidden;
+  }
+  .action-menu.open .action-dropdown{ display:block; }
+  .action-dropdown button{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    width:100%;
+    margin:0;
+    border:none;
+    border-radius:0;
+    background:#fff;
+    color:var(--text);
+    font-size:13px;
+    font-weight:600;
+    text-align:left;
+    padding:11px 14px;
+  }
+  .action-dropdown button:hover{ background: rgba(107,31,42,0.07); }
+  .action-dropdown button.delete-item{ color:var(--red); border-top:1px solid var(--border); }
+  .action-dropdown button.delete-item:hover{ background: rgba(192,57,43,0.08); }
+  .action-dropdown button svg{ width:14px; height:14px; flex-shrink:0; }
   .empty{
     color:var(--muted);
     font-size:14px;
@@ -1136,14 +1180,44 @@ function renderLoansTable(filterText){
       '<td>' + fmt(loan.loanAmount) + ' KD</td>' +
       '<td>' + statusBadge + '</td>' +
       '<td class="row-actions" style="text-align:right; white-space:nowrap;">' +
-        '<button class="secondary" onclick="editLoan(\'' + loan.id + '\')">Edit</button>' +
-        '<button class="danger" onclick="deleteLoan(\'' + loan.id + '\')">Delete</button>' +
+        '<div class="action-menu">' +
+          '<button class="action-btn" onclick="toggleActionMenu(event, this)">' +
+            'Action' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>' +
+          '</button>' +
+          '<div class="action-dropdown">' +
+            '<button onclick="editLoan(\'' + loan.id + '\'); closeActionMenus();">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>' +
+              'Edit' +
+            '</button>' +
+            '<button class="delete-item" onclick="deleteLoan(\'' + loan.id + '\'); closeActionMenus();">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>' +
+              'Delete' +
+            '</button>' +
+          '</div>' +
+        '</div>' +
       '</td>' +
       '</tr>';
   });
   html += '</tbody></table>';
   wrap.innerHTML = html;
 }
+
+// --- Action dropdown (All Loans table) ---
+function closeActionMenus(){
+  document.querySelectorAll('.action-menu.open').forEach(m => m.classList.remove('open'));
+}
+function toggleActionMenu(event, btn){
+  event.stopPropagation();
+  const menu = btn.closest('.action-menu');
+  const wasOpen = menu.classList.contains('open');
+  closeActionMenus();
+  if(!wasOpen) menu.classList.add('open');
+}
+// Close dropdown when clicking anywhere else
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.action-menu')) closeActionMenus();
+});
 
 function deleteLoan(id){
   if(!confirm('Ye loan aur uski saari collections delete karni hain?')) return;
@@ -2146,7 +2220,7 @@ async function doLogin(){
     return;
   }
   document.getElementById('loginError').style.display = 'none';
-  sessionStorage.setItem('shree_logged_in', '1');
+  localStorage.setItem('shree_logged_in', '1'); // persist across app opens (auto-login)
   await startApp();
 }
 
@@ -2164,8 +2238,8 @@ async function startApp(){
   showToast('☁️ Cloud connected');
 }
 
-// On page load: show gate or auto-start if already logged in this session
-if(sessionStorage.getItem('shree_logged_in') === '1'){
+// On page load: auto-login if already logged in before (persists across app opens)
+if(localStorage.getItem('shree_logged_in') === '1'){
   startApp();
 } else {
   document.getElementById('loginGate').style.display = 'flex';
